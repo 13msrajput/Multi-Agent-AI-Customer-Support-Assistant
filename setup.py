@@ -21,21 +21,21 @@ def step1_check_env():
 
     print("\n📄 Checking .env file...")
 
-    if not os.path.exists(".env"):
+    if not os.path.exists("backend/.env"):
 
-        if os.path.exists(".env.example"):
+        if os.path.exists("backend/.env.example"):
 
             import shutil
 
-            shutil.copy(".env.example", ".env")
+            shutil.copy("backend/.env.example", "backend/.env")
 
-            print("✅ Created .env from .env.example")
+            print("✅ Created backend/.env from backend/.env.example")
 
-            print("⚠️ Please add your GROQ_API_KEY to .env before starting the server.")
+            print("⚠️ Please add your GROQ_API_KEY to backend/.env before starting the server.")
 
         else:
 
-            print("⚠️ No .env file found. Create one from .env.example")
+            print("⚠️ No .env file found. Create one at backend/.env")
 
     else:
 
@@ -380,9 +380,7 @@ def main():
 
     step2_create_database()
 
-    step3_create_database_done()
-
-    step4_build_index()
+    step3_build_index()
 
     print("\n" + "=" * 60)
 

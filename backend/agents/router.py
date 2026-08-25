@@ -13,7 +13,7 @@ import logging
 import re
 from typing import Dict, List, Optional, Tuple
 from ..config import settings
-from .agents import BillingAgent, ComplaintAgent, FAQAgent, ProductAgent, TechnicalAgent
+from .agents import BillingAgent, CancellationAgent, ComplaintAgent, FAQAgent, ProductAgent, TechnicalAgent
 from .base import BaseAgent
 from .language import detect_language
 from .llm_client import get_llm_client
@@ -63,8 +63,6 @@ INTENTS = {
 
         "renew",
 
-        "cancel subscription",
-
         "techmart care",
 
         "rewards points",
@@ -98,6 +96,54 @@ INTENTS = {
         "upgrade plan",
 
         "care subscription"
+
+    ],
+
+    "cancellation": [
+
+        "cancel subscription",
+
+        "cancel my subscription",
+
+        "cancel my account",
+
+        "cancel my plan",
+
+        "cancel my membership",
+
+        "close my account",
+
+        "delete my account",
+
+        "unsubscribe",
+
+        "stop billing me",
+
+        "stop my subscription",
+
+        "i want to cancel",
+
+        "how do i cancel",
+
+        # Hindi terms
+        "सदस्यता रद्द करें",
+
+        "मेरा खाता बंद करें",
+
+        # Spanish terms
+        "cancelar mi suscripción",
+
+        "cancelar mi cuenta",
+
+        # French terms
+        "annuler mon abonnement",
+
+        "annuler mon compte",
+
+        # German terms
+        "abonnement kündigen",
+
+        "konto kündigen"
 
     ],
 
@@ -564,6 +610,8 @@ class AgentRouter:
 
             "billing": BillingAgent(),
 
+            "cancellation": CancellationAgent(),
+
             "refund": BillingAgent(),  # refunds handled by billing agent
 
             "technical": TechnicalAgent(),
@@ -610,6 +658,8 @@ class AgentRouter:
         valid_agents = {
 
             "billing",
+
+            "cancellation",
 
             "refund",
 
@@ -888,8 +938,9 @@ class AgentRouter:
                     Customer message language detected: {detected_lang}
 
                     Classify the customer message below into EXACTLY ONE intent from this list:
-                    - billing → payment, invoice, subscription, pricing, TechMart Care plans
-                    - refund → return requests, refunds, order cancellations
+                    - billing → payment, invoice, subscription cost/pricing, TechMart Care plans (NOT requests to cancel/close/stop a subscription — use "cancellation" for that)
+                    - cancellation → the customer wants to cancel, unsubscribe from, or close a subscription, account, or membership
+                    - refund → return requests, refunds, returning a physical product
                     - technical → device issues, setup, errors, troubleshooting, password reset
                     - product → product info, specs, comparisons, availability, recommendations
                     - complaint → complaints, dissatisfaction, escalations
@@ -979,6 +1030,8 @@ class AgentRouter:
 
             "billing",
 
+            "cancellation",
+
             "refund",
 
             "technical",
@@ -1046,7 +1099,13 @@ class AgentRouter:
 
             "billing support": "billing",
 
-            "complaint handling": "complaint"
+            "complaint handling": "complaint",
+
+            "cancel subscription": "cancellation",
+
+            "cancellations": "cancellation",
+
+            "account closure": "cancellation"
 
         }
 
@@ -1058,6 +1117,8 @@ class AgentRouter:
         valid_agents = {
 
             "billing",
+
+            "cancellation",
 
             "refund",
 

@@ -63,6 +63,62 @@ class BillingAgent(BaseAgent):
 
 
 # ------------------------------------------------------------------
+# 1b. CANCELLATION AGENT
+# ------------------------------------------------------------------
+class CancellationAgent(BaseAgent):
+
+    """
+    Handles: subscription/account cancellation and unsubscribe requests.
+    This is deliberately separate from BillingAgent — a customer asking
+    to cancel wants a cancellation path, not a list of payment methods.
+    Primary sources: refund_policy.txt, faq.txt
+    """
+
+    name = "TechMart Account Cancellation"
+
+    domain = "cancellation"
+
+    relevant_sources = ["refund_policy", "faq"]
+
+    @property
+    def role_description(self) -> str:
+
+        return (
+
+            """
+            You specialize in subscription and account cancellation requests for TechMart Electronics.
+
+            Your goal is to acknowledge the cancellation request directly, explain exactly what happens next (effective date, any proration, what they lose access to), and give a clear, concrete way to complete the cancellation.
+
+            Do not redirect the customer to unrelated billing information (payment methods, financing) unless they specifically ask for it — they came here to cancel, not to browse payment options.
+            """
+
+        )
+
+    def build_system_prompt(self, extra: str = "") -> str:
+
+        cancellation_rules = (
+
+            "\nCANCELLATION RULES:\n"
+
+            "- Acknowledge the cancellation request directly in the first sentence — do not open with generic payment/billing info.\n"
+
+            "- TechMart Care subscriptions can be cancelled anytime; cancellation takes effect at the end of the current billing period.\n"
+
+            "- No prorated refund is issued if cancelling after 30 days into the current billing cycle.\n"
+
+            "- Explain how to complete the cancellation: log into their account, go to Settings > Subscription, and select 'Cancel Subscription' — or reply here to confirm and we will process it manually.\n"
+
+            "- Always mention that a support ticket has been opened to track and confirm the cancellation.\n"
+
+            "- If the customer is cancelling due to a problem (not working, too expensive, bad experience), briefly acknowledge that reason with empathy before giving the cancellation steps.\n"
+
+        )
+
+        return super().build_system_prompt(extra = cancellation_rules + extra)
+
+
+# ------------------------------------------------------------------
 # 2. TECHNICAL SUPPORT AGENT
 # ------------------------------------------------------------------
 class TechnicalAgent(BaseAgent):

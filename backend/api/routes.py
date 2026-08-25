@@ -1105,7 +1105,11 @@ async def chat(payload: ChatRequest,current_user: User = Depends(get_current_use
 
     db.commit()
 
-    # Step 4: Route the message through the full agent system to get a reply
+    # Step 4: Route the message through the full agent system to get a reply.
+    # elapsed_ms is measured across the ENTIRE pipeline (intent detection +
+    # RAG retrieval + LLM generation), not just the intent-detection call
+    # above — otherwise the displayed response time massively understates
+    # how long the customer actually waited.
     result = await router_obj.route(payload.message, history, preferred_language = payload.language)
 
     elapsed_ms = time.time() * 1000 - start_ms
@@ -1138,13 +1142,31 @@ async def chat(payload: ChatRequest,current_user: User = Depends(get_current_use
     # Auto-create a support ticket for complaints or frustrated customers,
     # and notify the customer by email/WhatsApp about the new ticket
 
-    if result.get("intent") == "complaint" or result.get("sentiment") in ["frustrated", "negative"]:
+    if (
+
+        result.get("intent") in ["complaint", "cancellation"]
+
+        or result.get("sentiment") in ["frustrated", "negative"]
+
+    ):
 
         import random
 
         ticket_number = f"TM-{random.randint(10000, 99999)}"
 
-        priority = "high" if result.get("sentiment") == "frustrated" else "medium"
+        if result.get("sentiment") == "frustrated":
+
+            priority = "high"
+
+        elif result.get("intent") == "cancellation":
+
+            # Cancellation requests are churn risk — treat as high priority
+            # regardless of how calmly the customer phrased it.
+            priority = "high"
+
+        else:
+
+            priority = "medium"
 
         ticket = SupportTicket(
 

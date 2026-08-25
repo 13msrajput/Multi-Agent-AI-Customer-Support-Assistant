@@ -251,7 +251,7 @@ class LLMClient:
         # ----------------------------------------------------------------------------
         last_error = None
 
-        for attempt in range(3):
+        for attempt in range(2):
 
             try:
 
@@ -273,7 +273,7 @@ class LLMClient:
 
                         temperature = temperature if temperature is not None else settings.TEMPERATURE,
 
-                        timeout = 30.0
+                        timeout = 10.0
 
                     )
 
@@ -322,9 +322,9 @@ class LLMClient:
 
                     temperature = temperature or settings.TEMPERATURE,
 
-                    timeout = 30.0,
+                    timeout = 10.0,
 
-                    **extra_params
+                    extra_body = extra_params if extra_params else None
 
                 )
 
@@ -334,14 +334,12 @@ class LLMClient:
 
                 last_error = e
 
-                logger.warning(f"LLM attempt {attempt + 1}/3 failed ({self._provider}): {e}")
+                logger.warning(f"LLM attempt {attempt + 1}/2 failed ({self._provider}): {e}")
 
                 # Don't sleep after the final attempt, just fall through to the fallback
-                if attempt < 2:
+                if attempt < 1:
 
-                    import asyncio
-
-                    wait = (attempt + 1) * 2  # 2s, then 4s
+                    wait = 1  # single short pause before the one retry
 
                     logger.info(f"Retrying in {wait}s...")
 
@@ -349,7 +347,7 @@ class LLMClient:
 
                 continue
 
-        logger.error(f"LLM API failed after 3 attempts: {last_error}")
+        logger.error(f"LLM API failed after 2 attempts: {last_error}")
 
         # All retries failed — use the smart fallback based on the last user message
         last_msg = ""
