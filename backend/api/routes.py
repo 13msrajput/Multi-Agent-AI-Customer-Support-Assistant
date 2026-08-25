@@ -80,6 +80,8 @@ from .whatsapp_service import (
 
     send_ticket_whatsapp,
 
+    send_whatsapp,
+
     is_whatsapp_configured,
 
 )
@@ -1493,6 +1495,33 @@ async def submit_feedback(payload: FeedbackRequest, current_user: User = Depends
         rating = payload.rating,
 
     )
+
+    # Also send a WhatsApp thank-you, only if the user has a phone number on
+    # file and Twilio is configured — mirrors the pattern used for ticket
+    # notifications elsewhere in this file.
+    if current_user.phone and is_whatsapp_configured():
+
+        stars = "⭐" * payload.rating
+
+        whatsapp_message = (
+
+            f"Hi {current_user.name}, thanks for rating your TechMart support conversation "
+
+            f"{stars} ({payload.rating}/5)! "
+
+            + (f"Your feedback: \"{payload.comment}\" " if payload.comment else "")
+
+            + "We appreciate you taking the time to help us improve."
+
+        )
+
+        send_whatsapp(
+
+            to_number = current_user.phone,
+
+            message = whatsapp_message,
+
+        )
 
     return FeedbackOut.model_validate(feedback)
 

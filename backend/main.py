@@ -76,6 +76,27 @@ async def lifespan(app: FastAPI):
 
     logger.info("Startup complete. Embedding loads on first request.")
 
+    # In local development, eagerly load the embedding model at startup so the
+    # FIRST chat request isn't slowed down by a ~15s model load on top of the
+    # actual LLM call. Skipped in production (DEBUG=false) to avoid loading the
+    # ~90MB model at startup on memory-constrained free-tier hosting — there,
+    # the original lazy-load-on-first-request behavior is kept.
+    if settings.DEBUG:
+
+        try:
+
+            from .rag.embeddings import get_embedding_manager
+
+            embedding_manager = get_embedding_manager(settings.EMBEDDING_MODEL)
+
+            embedding_manager._load_model()
+
+            logger.info("Embedding model preloaded at startup (DEBUG mode).")
+
+        except Exception as e:
+
+            logger.warning(f"Could not preload embedding model: {e}. Will load on first request instead.")
+
     # Start the background job that emails due scheduled analytics reports
     from .scheduler import start_scheduler, stop_scheduler
 

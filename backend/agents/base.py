@@ -106,6 +106,14 @@ class BaseAgent:
 
             "- End with a friendly close and ask if there is anything else you can help with.\n\n"
 
+            "FORMATTING RULE — MUST FOLLOW:\n"
+
+            "- Write in plain text only. Do NOT use markdown symbols like **bold**, *italic*, # headers, or bullet-point dashes (-).\n"
+
+            "- For lists, write each item as a plain sentence or use a simple numbered format (1., 2., 3.) instead of dashes or asterisks.\n"
+
+            "- Keep your full answer within about 120 words so it fits in the reply length limit — do not start a list or sentence you cannot finish.\n\n"
+
             f"Company: {COMPANY}\n"
 
             "Support Phone: 1-800-TECHMART (1-800-832-4627)\n"
