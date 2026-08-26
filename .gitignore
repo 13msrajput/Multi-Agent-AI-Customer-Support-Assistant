@@ -1,5 +1,6 @@
 # Python
 .venv/
+.vscode/
 __pycache__/
 *.py[cod]
 *.log
@@ -23,9 +24,6 @@ frontend/node_modules/
 # Next.js
 frontend/.next/
 out/
-
-# VS Code
-.vscode/
 
 # OS
 .DS_Store
