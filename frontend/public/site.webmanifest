@@ -1,0 +1,11 @@
+{
+  "name": "TechMart AI Support",
+  "short_name": "TechMart AI",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#0f77ff",
+  "background_color": "#0f77ff",
+  "display": "standalone"
+}
