@@ -7,7 +7,6 @@
 // never shows a blank or a raw key on screen.
 
 export const LANGUAGES = [
-
   { code: "en-US", label: "English (US)", flag: "🇺🇸" },
   { code: "en-GB", label: "English (UK)", flag: "🇬🇧" },
   { code: "hi", label: "हिन्दी", flag: "🇮🇳" },
@@ -17,8 +16,7 @@ export const LANGUAGES = [
   { code: "ja", label: "日本語", flag: "🇯🇵" },
   { code: "zh", label: "中文", flag: "🇨🇳" },
   { code: "ru", label: "Русский", flag: "🇷🇺" },
-  { code: "ko", label: "한국어", flag: "🇰🇷" }
-
+  { code: "ko", label: "한국어", flag: "🇰🇷" },
 ];
 
 export const DEFAULT_LANGUAGE = "en-US";
@@ -28,22 +26,19 @@ export const DEFAULT_LANGUAGE = "en-US";
 // system prompt is built in English regardless of UI language, so it
 // needs the English name of the target language, not the language code.
 export const LANGUAGE_NAMES = {
-
   "en-US": "English",
   "en-GB": "English",
-  "hi": "Hindi",
-  "es": "Spanish",
-  "fr": "French",
-  "de": "German",
-  "ja": "Japanese",
-  "zh": "Chinese",
-  "ru": "Russian",
-  "ko": "Korean"
-
+  hi: "Hindi",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  ja: "Japanese",
+  zh: "Chinese",
+  ru: "Russian",
+  ko: "Korean",
 };
 
 const en_US = {
-
   newChat: "New Chat",
   chats: "Chats",
   analytics: "Analytics",
@@ -102,7 +97,8 @@ const en_US = {
   poweredByMultiAgentRAG: "Powered by Multi-Agent AI + RAG",
   last30Days: "Last 30 days",
   welcomeTitle: "Welcome to TechMart AI Support",
-  welcomeSubtitle: "I'm here to help with billing, technical issues, product info, and more. Ask me anything!",
+  welcomeSubtitle:
+    "I'm here to help with billing, technical issues, product info, and more. Ask me anything!",
   footerTagline: "TechMart AI Support · Powered by Multi-Agent RAG System",
 
   suggestionReturnPolicy: "What is your return policy?",
@@ -110,12 +106,10 @@ const en_US = {
   suggestionUltraBook: "Tell me about the UltraBook Pro 15",
   suggestionCancelSubscription: "I want to cancel my subscription",
   suggestionTrackOrder: "Track my order",
-  suggestionCarePricing: "TechMart Care pricing"
-
+  suggestionCarePricing: "TechMart Care pricing",
 };
 
 const hi = {
-
   newChat: "नई चैट",
   chats: "चैट्स",
   analytics: "एनालिटिक्स",
@@ -174,7 +168,8 @@ const hi = {
   poweredByMultiAgentRAG: "मल्टी-एजेंट AI + RAG द्वारा संचालित",
   last30Days: "पिछले 30 दिन",
   welcomeTitle: "TechMart AI सहायता में आपका स्वागत है",
-  welcomeSubtitle: "मैं बिलिंग, तकनीकी समस्याओं, उत्पाद जानकारी और अधिक में मदद के लिए यहाँ हूँ। मुझसे कुछ भी पूछें!",
+  welcomeSubtitle:
+    "मैं बिलिंग, तकनीकी समस्याओं, उत्पाद जानकारी और अधिक में मदद के लिए यहाँ हूँ। मुझसे कुछ भी पूछें!",
   footerTagline: "TechMart AI Support · मल्टी-एजेंट RAG सिस्टम द्वारा संचालित",
 
   suggestionReturnPolicy: "आपकी वापसी नीति क्या है?",
@@ -182,12 +177,10 @@ const hi = {
   suggestionUltraBook: "मुझे UltraBook Pro 15 के बारे में बताएं",
   suggestionCancelSubscription: "मैं अपनी सदस्यता रद्द करना चाहता हूँ",
   suggestionTrackOrder: "मेरा ऑर्डर ट्रैक करें",
-  suggestionCarePricing: "TechMart Care की कीमत"
-
+  suggestionCarePricing: "TechMart Care की कीमत",
 };
 
 const es = {
-
   newChat: "Nuevo chat",
   chats: "Chats",
   analytics: "Analítica",
@@ -246,20 +239,20 @@ const es = {
   poweredByMultiAgentRAG: "Desarrollado con IA multiagente + RAG",
   last30Days: "Últimos 30 días",
   welcomeTitle: "Bienvenido a TechMart AI Support",
-  welcomeSubtitle: "Estoy aquí para ayudar con facturación, problemas técnicos, información de productos y más. ¡Pregúntame lo que sea!",
-  footerTagline: "TechMart AI Support · Desarrollado con sistema RAG multiagente",
+  welcomeSubtitle:
+    "Estoy aquí para ayudar con facturación, problemas técnicos, información de productos y más. ¡Pregúntame lo que sea!",
+  footerTagline:
+    "TechMart AI Support · Desarrollado con sistema RAG multiagente",
 
   suggestionReturnPolicy: "¿Cuál es su política de devoluciones?",
   suggestionLaptopWontTurnOn: "Mi portátil no enciende",
   suggestionUltraBook: "Cuéntame sobre el UltraBook Pro 15",
   suggestionCancelSubscription: "Quiero cancelar mi suscripción",
   suggestionTrackOrder: "Rastrear mi pedido",
-  suggestionCarePricing: "Precios de TechMart Care"
-
+  suggestionCarePricing: "Precios de TechMart Care",
 };
 
 const fr = {
-
   newChat: "Nouvelle discussion",
   chats: "Discussions",
   analytics: "Analytique",
@@ -318,20 +311,20 @@ const fr = {
   poweredByMultiAgentRAG: "Propulsé par l'IA multi-agents + RAG",
   last30Days: "30 derniers jours",
   welcomeTitle: "Bienvenue sur TechMart AI Support",
-  welcomeSubtitle: "Je suis là pour vous aider avec la facturation, les problèmes techniques, les informations produits et plus encore. Demandez-moi ce que vous voulez !",
-  footerTagline: "TechMart AI Support · Propulsé par un système RAG multi-agents",
+  welcomeSubtitle:
+    "Je suis là pour vous aider avec la facturation, les problèmes techniques, les informations produits et plus encore. Demandez-moi ce que vous voulez !",
+  footerTagline:
+    "TechMart AI Support · Propulsé par un système RAG multi-agents",
 
   suggestionReturnPolicy: "Quelle est votre politique de retour ?",
   suggestionLaptopWontTurnOn: "Mon ordinateur portable ne s'allume pas",
   suggestionUltraBook: "Parlez-moi de l'UltraBook Pro 15",
   suggestionCancelSubscription: "Je veux annuler mon abonnement",
   suggestionTrackOrder: "Suivre ma commande",
-  suggestionCarePricing: "Tarifs TechMart Care"
-
+  suggestionCarePricing: "Tarifs TechMart Care",
 };
 
 const de = {
-
   newChat: "Neuer Chat",
   chats: "Chats",
   analytics: "Analytik",
@@ -390,20 +383,20 @@ const de = {
   poweredByMultiAgentRAG: "Unterstützt durch Multi-Agent-KI + RAG",
   last30Days: "Letzte 30 Tage",
   welcomeTitle: "Willkommen beim TechMart AI Support",
-  welcomeSubtitle: "Ich helfe Ihnen gerne bei Rechnungen, technischen Problemen, Produktinformationen und mehr. Fragen Sie mich einfach!",
-  footerTagline: "TechMart AI Support · Unterstützt durch Multi-Agent-RAG-System",
+  welcomeSubtitle:
+    "Ich helfe Ihnen gerne bei Rechnungen, technischen Problemen, Produktinformationen und mehr. Fragen Sie mich einfach!",
+  footerTagline:
+    "TechMart AI Support · Unterstützt durch Multi-Agent-RAG-System",
 
   suggestionReturnPolicy: "Wie lautet Ihre Rückgaberichtlinie?",
   suggestionLaptopWontTurnOn: "Mein Laptop lässt sich nicht einschalten",
   suggestionUltraBook: "Erzählen Sie mir mehr über das UltraBook Pro 15",
   suggestionCancelSubscription: "Ich möchte mein Abonnement kündigen",
   suggestionTrackOrder: "Meine Bestellung verfolgen",
-  suggestionCarePricing: "TechMart Care Preise"
-
+  suggestionCarePricing: "TechMart Care Preise",
 };
 
 const ja = {
-
   newChat: "新しいチャット",
   chats: "チャット",
   analytics: "分析",
@@ -462,7 +455,8 @@ const ja = {
   poweredByMultiAgentRAG: "マルチエージェントAI + RAG搭載",
   last30Days: "過去30日間",
   welcomeTitle: "TechMart AI サポートへようこそ",
-  welcomeSubtitle: "請求、技術的な問題、製品情報など、何でもお気軽にお尋ねください！",
+  welcomeSubtitle:
+    "請求、技術的な問題、製品情報など、何でもお気軽にお尋ねください！",
   footerTagline: "TechMart AI Support · マルチエージェントRAGシステム搭載",
 
   suggestionReturnPolicy: "返品ポリシーは何ですか？",
@@ -470,12 +464,10 @@ const ja = {
   suggestionUltraBook: "UltraBook Pro 15について教えてください",
   suggestionCancelSubscription: "サブスクリプションを解約したいです",
   suggestionTrackOrder: "注文を追跡する",
-  suggestionCarePricing: "TechMart Careの料金"
-
+  suggestionCarePricing: "TechMart Careの料金",
 };
 
 const zh = {
-
   newChat: "新建聊天",
   chats: "聊天",
   analytics: "分析",
@@ -534,7 +526,8 @@ const zh = {
   poweredByMultiAgentRAG: "由多智能体AI + RAG驱动",
   last30Days: "过去30天",
   welcomeTitle: "欢迎使用TechMart AI支持",
-  welcomeSubtitle: "我可以帮助您解决账单、技术问题、产品信息等。请随时问我任何问题！",
+  welcomeSubtitle:
+    "我可以帮助您解决账单、技术问题、产品信息等。请随时问我任何问题！",
   footerTagline: "TechMart AI Support · 由多智能体RAG系统驱动",
 
   suggestionReturnPolicy: "你们的退货政策是什么？",
@@ -542,12 +535,10 @@ const zh = {
   suggestionUltraBook: "介绍一下UltraBook Pro 15",
   suggestionCancelSubscription: "我想取消我的订阅",
   suggestionTrackOrder: "追踪我的订单",
-  suggestionCarePricing: "TechMart Care定价"
-
+  suggestionCarePricing: "TechMart Care定价",
 };
 
 const ru = {
-
   newChat: "Новый чат",
   chats: "Чаты",
   analytics: "Аналитика",
@@ -606,7 +597,8 @@ const ru = {
   poweredByMultiAgentRAG: "На основе мультиагентного ИИ + RAG",
   last30Days: "Последние 30 дней",
   welcomeTitle: "Добро пожаловать в TechMart AI Support",
-  welcomeSubtitle: "Я помогу с вопросами по оплате, техническими проблемами, информацией о товарах и многим другим. Спрашивайте что угодно!",
+  welcomeSubtitle:
+    "Я помогу с вопросами по оплате, техническими проблемами, информацией о товарах и многим другим. Спрашивайте что угодно!",
   footerTagline: "TechMart AI Support · На основе мультиагентной системы RAG",
 
   suggestionReturnPolicy: "Какова ваша политика возврата?",
@@ -614,12 +606,10 @@ const ru = {
   suggestionUltraBook: "Расскажите об UltraBook Pro 15",
   suggestionCancelSubscription: "Я хочу отменить подписку",
   suggestionTrackOrder: "Отследить мой заказ",
-  suggestionCarePricing: "Цены на TechMart Care"
-
+  suggestionCarePricing: "Цены на TechMart Care",
 };
 
 const ko = {
-
   newChat: "새 채팅",
   chats: "채팅",
   analytics: "분석",
@@ -678,7 +668,8 @@ const ko = {
   poweredByMultiAgentRAG: "멀티 에이전트 AI + RAG 기반",
   last30Days: "최근 30일",
   welcomeTitle: "TechMart AI 지원에 오신 것을 환영합니다",
-  welcomeSubtitle: "청구, 기술 문제, 제품 정보 등 무엇이든 도와드리겠습니다. 무엇이든 물어보세요!",
+  welcomeSubtitle:
+    "청구, 기술 문제, 제품 정보 등 무엇이든 도와드리겠습니다. 무엇이든 물어보세요!",
   footerTagline: "TechMart AI Support · 멀티 에이전트 RAG 시스템 기반",
 
   suggestionReturnPolicy: "반품 정책이 어떻게 되나요?",
@@ -686,23 +677,20 @@ const ko = {
   suggestionUltraBook: "UltraBook Pro 15에 대해 알려주세요",
   suggestionCancelSubscription: "구독을 취소하고 싶습니다",
   suggestionTrackOrder: "주문 추적",
-  suggestionCarePricing: "TechMart Care 가격"
-
+  suggestionCarePricing: "TechMart Care 가격",
 };
 
 const en_GB = { ...en_US };
 
 export const TRANSLATIONS = {
-
   "en-US": en_US,
   "en-GB": en_GB,
-  "hi": hi,
-  "es": es,
-  "fr": fr,
-  "de": de,
-  "ja": ja,
-  "zh": zh,
-  "ru": ru,
-  "ko": ko
-
+  hi: hi,
+  es: es,
+  fr: fr,
+  de: de,
+  ja: ja,
+  zh: zh,
+  ru: ru,
+  ko: ko,
 };

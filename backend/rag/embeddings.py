@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class EmbeddingManager:
-    
     """
     Wraps sentence-transformers for generating embeddings.
     Uses a singleton pattern — only one model is loaded per process,
@@ -28,10 +27,11 @@ class EmbeddingManager:
         # The actual model object — not loaded yet, see _load_model() below
         self._model = None
 
-        logger.info(f"EmbeddingManager initialized (model will load on first use): {model_name}")
+        logger.info(
+            f"EmbeddingManager initialized (model will load on first use): {model_name}"
+        )
 
     def _load_model(self):
-        
         "Lazily load the sentence-transformer model on first use, so app startup isn't slowed down if embeddings are never needed."
 
         if self._model is None:
@@ -51,7 +51,6 @@ class EmbeddingManager:
         return self._model
 
     def embed_texts(self, texts: List[str]) -> np.ndarray:
-        
         """
         Generate embeddings for a list of texts.
         Returns a (N, dim) float32 numpy array, one row per input text.
@@ -60,24 +59,17 @@ class EmbeddingManager:
         model = self._load_model()
 
         embeddings = model.encode(
-
             texts,
-
-            batch_size = 8,
-
-            show_progress_bar = True,
-
-            normalize_embeddings = True,  # normalized vectors make cosine similarity easier to compute
-
-            convert_to_numpy = True
-
+            batch_size=8,
+            show_progress_bar=True,
+            normalize_embeddings=True,  # normalized vectors make cosine similarity easier to compute
+            convert_to_numpy=True,
         )
 
         # Cast to float32 to keep memory usage down and match FAISS's expected dtype
         return embeddings.astype(np.float32)
 
     def embed_query(self, query: str) -> np.ndarray:
-        
         """
         Generate an embedding for a single query string.
         Returns a (1, dim) float32 numpy array.
@@ -87,7 +79,6 @@ class EmbeddingManager:
 
     @property
     def embedding_dim(self) -> int:
-        
         "The dimensionality of vectors this model produces (needed when creating the FAISS index)."
 
         model = self._load_model()
@@ -102,7 +93,6 @@ _embedding_manager: EmbeddingManager | None = None
 
 
 def get_embedding_manager(model_name: str = "all-MiniLM-L6-v2") -> EmbeddingManager:
-    
     "Return the shared EmbeddingManager instance, creating it on first call."
 
     global _embedding_manager

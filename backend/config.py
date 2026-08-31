@@ -23,7 +23,7 @@ load_dotenv(Path(__file__).parent / ".env")
 
 
 class Settings:
-    
+
     # ------------------------------------------------------------------
     # App metadata
     # ------------------------------------------------------------------
@@ -34,13 +34,11 @@ class Settings:
     # DEBUG is True only if the DEBUG env var is literally the string "true"
     DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
 
-
     # ------------------------------------------------------------------
     # LLM Provider selection
     # ------------------------------------------------------------------
     # Set LLM_PROVIDER to: groq | openai | ollama | anthropic
     LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "groq")
-
 
     # ------------------------------------------------------------------
     # Groq settings (used when LLM_PROVIDER = "groq")
@@ -51,7 +49,6 @@ class Settings:
 
     GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
 
-
     # ------------------------------------------------------------------
     # OpenAI settings (used when LLM_PROVIDER = "openai")
     # ------------------------------------------------------------------
@@ -61,14 +58,12 @@ class Settings:
 
     OPENAI_BASE_URL: str = "https://api.openai.com/v1"
 
-
     # ------------------------------------------------------------------
     # Anthropic Claude settings
     # ------------------------------------------------------------------
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
 
     ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-3-haiku-20240307")
-
 
     # ------------------------------------------------------------------
     # Ollama settings (for running models locally, no API key needed)
@@ -77,18 +72,19 @@ class Settings:
 
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3.1")
 
-
     # ------------------------------------------------------------------
     # Embedding model — turns text into vectors for similarity search
     # ------------------------------------------------------------------
-    EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-
+    EMBEDDING_MODEL: str = os.getenv(
+        "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
+    )
 
     # ------------------------------------------------------------------
     # Database connection string (defaults to a local SQLite file)
     # ------------------------------------------------------------------
-    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/customer_support.db")
-
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL", f"sqlite:///{BASE_DIR}/customer_support.db"
+    )
 
     # ------------------------------------------------------------------
     # Auth — JWT signing secret and token lifetime
@@ -97,14 +93,15 @@ class Settings:
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     if not SECRET_KEY:
-        
+
         raise ValueError("SECRET_KEY environment variable is required.")
 
     ALGORITHM: str = "HS256"
 
     # How long a login token stays valid, in minutes (default: 24 hours)
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  # 24 hours
-
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
+        os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440")
+    )  # 24 hours
 
     # ------------------------------------------------------------------
     # Google Sign-In (OAuth ID token verification)
@@ -112,7 +109,6 @@ class Settings:
     # The Google Cloud OAuth 2.0 Client ID (Web application type). Must match
     # the client ID used by the frontend's Google Identity Services button.
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
-
 
     # ------------------------------------------------------------------
     # Email OTP (one-time passcode) login/registration
@@ -122,7 +118,9 @@ class Settings:
     OTP_EXPIRE_MINUTES: int = int(os.getenv("OTP_EXPIRE_MINUTES", "10"))
 
     # Minimum seconds a user must wait before requesting another OTP for the same email
-    OTP_RESEND_COOLDOWN_SECONDS: int = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60"))
+    OTP_RESEND_COOLDOWN_SECONDS: int = int(
+        os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60")
+    )
 
     # Max wrong-code attempts allowed per issued OTP before it's invalidated
     OTP_MAX_ATTEMPTS: int = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
@@ -130,8 +128,9 @@ class Settings:
     # How long the short-lived "email verified" proof token stays valid after
     # a successful OTP check, before it must be used to complete password
     # registration (kept short since it's a narrow-purpose token, not a login session)
-    EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES", "15"))
-
+    EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES: int = int(
+        os.getenv("EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES", "15")
+    )
 
     # ------------------------------------------------------------------
     # Password reset (forgot-password email flow)
@@ -140,11 +139,14 @@ class Settings:
     # sent in the email (e.g. "http://localhost:3000" or the deployed domain)
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
-    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("PASSWORD_RESET_TOKEN_EXPIRE_MINUTES", "30"))
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = int(
+        os.getenv("PASSWORD_RESET_TOKEN_EXPIRE_MINUTES", "30")
+    )
 
     # Minimum seconds between reset-link requests for the same email
-    PASSWORD_RESET_RESEND_COOLDOWN_SECONDS: int = int(os.getenv("PASSWORD_RESET_RESEND_COOLDOWN_SECONDS", "60"))
-
+    PASSWORD_RESET_RESEND_COOLDOWN_SECONDS: int = int(
+        os.getenv("PASSWORD_RESET_RESEND_COOLDOWN_SECONDS", "60")
+    )
 
     # ------------------------------------------------------------------
     # RAG (Retrieval-Augmented Generation) tuning
@@ -164,7 +166,6 @@ class Settings:
     # How many top-matching chunks to retrieve per query
     TOP_K_RESULTS: int = int(os.getenv("TOP_K_RESULTS", "1"))
 
-
     # ------------------------------------------------------------------
     # LLM generation parameters
     # ------------------------------------------------------------------
@@ -172,7 +173,6 @@ class Settings:
 
     # Higher = more random/creative, lower = more focused/deterministic
     TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.4"))
-
 
     # ------------------------------------------------------------------
     # Email settings, used for sending support notifications.
@@ -198,7 +198,6 @@ class Settings:
     # if not explicitly set.
     SENDGRID_FROM_EMAIL: str = os.getenv("SENDGRID_FROM_EMAIL", "")
 
-
     # ------------------------------------------------------------------
     # WhatsApp messaging via Twilio
     # ------------------------------------------------------------------
@@ -206,8 +205,9 @@ class Settings:
 
     TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
 
-    TWILIO_WHATSAPP_FROM: str = os.getenv("TWILIO_WHATSAPP_FROM", "whatsapp:+14155238886")
-
+    TWILIO_WHATSAPP_FROM: str = os.getenv(
+        "TWILIO_WHATSAPP_FROM", "whatsapp:+14155238886"
+    )
 
     # ------------------------------------------------------------------
     # Company branding, shown in template responses / emails
@@ -219,7 +219,6 @@ class Settings:
     SUPPORT_PHONE: str = "1-800-TECHMART"
 
     def get_llm_config(self) -> dict:
-        
         """
         Return the API key, base URL, and model name for whichever
         LLM_PROVIDER is currently configured.
@@ -232,39 +231,27 @@ class Settings:
 
             # Groq: fast inference, OpenAI-compatible API
             return {
-                
                 "api_key": self.GROQ_API_KEY,
-                
                 "base_url": self.GROQ_BASE_URL,
-                
-                "model": self.GROQ_MODEL
-                
+                "model": self.GROQ_MODEL,
             }
 
         elif self.LLM_PROVIDER == "openai":
 
             # OpenAI: standard GPT models
             return {
-                
                 "api_key": self.OPENAI_API_KEY,
-                
                 "base_url": self.OPENAI_BASE_URL,
-                
-                "model": self.OPENAI_MODEL
-                
+                "model": self.OPENAI_MODEL,
             }
 
         elif self.LLM_PROVIDER == "anthropic":
 
             # Anthropic Claude: uses its own SDK/endpoint, not OpenAI-compatible
             return {
-                
                 "api_key": self.ANTHROPIC_API_KEY,
-                
                 "base_url": "",
-                
-                "model": self.ANTHROPIC_MODEL
-                
+                "model": self.ANTHROPIC_MODEL,
             }
 
         elif self.LLM_PROVIDER == "ollama":
@@ -272,28 +259,16 @@ class Settings:
             # Ollama runs locally, so no real API key is required —
             # the string "ollama" is just a placeholder value
             return {
-                
                 "api_key": "ollama",
-                
                 "base_url": self.OLLAMA_BASE_URL,
-                
-                "model": self.OLLAMA_MODEL
-                
+                "model": self.OLLAMA_MODEL,
             }
 
         else:
 
             # Unknown/unset provider — fall back to mock mode so the
             # app still runs (using template responses) without a key
-            return {
-                
-                "api_key": "", 
-                
-                "base_url": "", 
-                
-                "model": "mock"
-                
-                }
+            return {"api_key": "", "base_url": "", "model": "mock"}
 
 
 # Single shared settings instance, imported everywhere else in the app

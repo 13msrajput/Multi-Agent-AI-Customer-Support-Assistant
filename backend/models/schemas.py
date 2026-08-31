@@ -12,7 +12,6 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class UTCTimestampMixin(BaseModel):
-
     """
     Mixin for any response schema that includes datetime fields sourced
     from the database. SQLAlchemy's DateTime columns (populated via
@@ -30,44 +29,43 @@ class UTCTimestampMixin(BaseModel):
     `new Date(...)` call converts it to the visitor's local time correctly.
     """
 
-    @field_validator("*", mode = "after")
+    @field_validator("*", mode="after")
     @classmethod
     def _mark_naive_datetimes_as_utc(cls, value):
 
         if isinstance(value, datetime) and value.tzinfo is None:
 
-            return value.replace(tzinfo = timezone.utc)
+            return value.replace(tzinfo=timezone.utc)
 
         return value
+
 
 # ------------------------------------------------------------------
 # Auth
 # ------------------------------------------------------------------
 class RegisterRequest(BaseModel):
-    
     "Payload sent when a new user signs up with a password."
 
-    name: str = Field(..., min_length = 2, max_length = 80)
+    name: str = Field(..., min_length=2, max_length=80)
 
     email: EmailStr
 
-    password: str = Field(..., min_length = 6)
+    password: str = Field(..., min_length=6)
 
     phone: Optional[str] = Field(
-
-        None, description = "Phone with country code e.g. +919876543210"
-
+        None, description="Phone with country code e.g. +919876543210"
     )
 
     # Proof this email was just confirmed via OTP — obtained from
     # POST /auth/verify-otp (with intent="register") before this call.
     # Prevents anyone from creating a password account for an email they
     # don't actually control.
-    otp_token: str = Field(..., description = "Verification token returned by /auth/verify-otp")
+    otp_token: str = Field(
+        ..., description="Verification token returned by /auth/verify-otp"
+    )
 
 
 class LoginRequest(BaseModel):
-    
     "Payload sent when a user logs in."
 
     email: EmailStr
@@ -76,54 +74,50 @@ class LoginRequest(BaseModel):
 
 
 class UpdatePhoneRequest(BaseModel):
-
     "Payload sent to set or update the logged-in user's phone number, e.g. after Google sign-in where no phone was collected."
 
     phone: Optional[str] = Field(
-
-        None, description = "Phone with country code e.g. +919876543210, or null to clear it"
-
+        None,
+        description="Phone with country code e.g. +919876543210, or null to clear it",
     )
 
 
 class GoogleAuthRequest(BaseModel):
-
     "Payload sent after the frontend completes Google Sign-In — contains the Google ID token to verify."
 
-    id_token: str = Field(..., description = "The credential/ID token returned by Google Identity Services")
+    id_token: str = Field(
+        ..., description="The credential/ID token returned by Google Identity Services"
+    )
 
 
 class SendOTPRequest(BaseModel):
-
     "Payload sent to request a one-time passcode be emailed to an address."
 
     email: EmailStr
 
     # Optional name, used only if this OTP ends up creating a brand-new account
-    name: Optional[str] = Field(None, min_length = 2, max_length = 80)
+    name: Optional[str] = Field(None, min_length=2, max_length=80)
 
 
 class VerifyOTPRequest(BaseModel):
-
     "Payload sent to verify a one-time passcode and complete login/registration."
 
     email: EmailStr
 
-    code: str = Field(..., min_length = 4, max_length = 8)
+    code: str = Field(..., min_length=4, max_length=8)
 
     # Optional name, used only if this OTP ends up creating a brand-new account
     # via the OTP-only login flow (intent="login")
-    name: Optional[str] = Field(None, min_length = 2, max_length = 80)
+    name: Optional[str] = Field(None, min_length=2, max_length=80)
 
     # "login": verifying logs the user straight in (or auto-registers via OTP-only).
     # "register": verifying only proves email ownership and returns a short-lived
     # token — no account is created yet; the frontend then calls /auth/register
     # with that token plus a chosen password to actually create the account.
-    intent: str = Field("login", pattern = "^(login|register)$")
+    intent: str = Field("login", pattern="^(login|register)$")
 
 
 class OTPSentResponse(BaseModel):
-
     "Returned after successfully queuing an OTP email."
 
     message: str
@@ -132,57 +126,61 @@ class OTPSentResponse(BaseModel):
 
 
 class EmailVerifiedResponse(BaseModel):
-
     "Returned after verify-otp succeeds with intent='register' — email is confirmed but no account exists yet."
 
     message: str
 
     email: str
 
-    otp_token: str = Field(..., description = "Pass this to /auth/register to complete account creation")
+    otp_token: str = Field(
+        ..., description="Pass this to /auth/register to complete account creation"
+    )
 
 
 class ForgotPasswordRequest(BaseModel):
-
     "Payload sent to request a password reset link be emailed to an address."
 
     email: EmailStr
 
 
 class ResetPasswordRequest(BaseModel):
-
     "Payload sent to actually reset a password using the token from the emailed reset link."
 
-    token: str = Field(..., description = "The raw reset token from the emailed link's URL")
+    token: str = Field(
+        ..., description="The raw reset token from the emailed link's URL"
+    )
 
-    new_password: str = Field(..., min_length = 6)
+    new_password: str = Field(..., min_length=6)
 
 
 class GenericMessageResponse(BaseModel):
-
     "A plain success message — used for endpoints that don't need to reveal whether an email exists (e.g. forgot-password)."
 
     message: str
 
 
 class TranslateRequest(BaseModel):
-
     "Payload sent to translate a batch of short strings (e.g. chat titles) into a target language."
 
-    texts: List[str] = Field(..., min_length = 1, max_length = 50, description = "Short strings to translate, e.g. chat session titles")
+    texts: List[str] = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        description="Short strings to translate, e.g. chat session titles",
+    )
 
-    target_language: str = Field(..., description = "Target language name, e.g. 'Hindi', 'Spanish'")
+    target_language: str = Field(
+        ..., description="Target language name, e.g. 'Hindi', 'Spanish'"
+    )
 
 
 class TranslateResponse(BaseModel):
-
     "Returned translations, in the same order as the input texts."
 
     translations: List[str]
 
 
 class DocOut(BaseModel):
-
     "One entry in the public documentation list — metadata only, not the full content."
 
     id: str
@@ -193,7 +191,6 @@ class DocOut(BaseModel):
 
 
 class DocContentOut(BaseModel):
-
     "Full content of a single documentation page."
 
     id: str
@@ -204,20 +201,22 @@ class DocContentOut(BaseModel):
 
 
 class BugReportRequest(BaseModel):
-
     "Payload sent when a user submits a bug report from the Get Help menu."
 
-    title: str = Field(..., min_length = 3, max_length = 150)
+    title: str = Field(..., min_length=3, max_length=150)
 
-    description: str = Field(..., min_length = 10, max_length = 3000)
+    description: str = Field(..., min_length=10, max_length=3000)
 
-    steps_to_reproduce: Optional[str] = Field(None, max_length = 2000)
+    steps_to_reproduce: Optional[str] = Field(None, max_length=2000)
 
-    page_url: Optional[str] = Field(None, max_length = 500, description = "The page the user was on when they hit the bug")
+    page_url: Optional[str] = Field(
+        None,
+        max_length=500,
+        description="The page the user was on when they hit the bug",
+    )
 
 
 class BugReportOut(UTCTimestampMixin):
-
     "A submitted bug report, as returned to the user or an admin."
 
     id: str
@@ -240,16 +239,16 @@ class BugReportOut(UTCTimestampMixin):
 
 
 class ScheduledReportRequest(BaseModel):
-
     "Payload sent to create a recurring analytics email report."
 
-    email: Optional[str] = Field(None, description = "Defaults to the account's own email if not given")
+    email: Optional[str] = Field(
+        None, description="Defaults to the account's own email if not given"
+    )
 
-    frequency: str = Field(..., pattern = "^(daily|weekly|monthly)$")
+    frequency: str = Field(..., pattern="^(daily|weekly|monthly)$")
 
 
 class ScheduledReportOut(UTCTimestampMixin):
-
     "A scheduled report, as returned to the user."
 
     id: str
@@ -270,7 +269,6 @@ class ScheduledReportOut(UTCTimestampMixin):
 
 
 class TokenResponse(BaseModel):
-    
     "Returned after a successful login/registration — contains the JWT token."
 
     access_token: str
@@ -281,7 +279,6 @@ class TokenResponse(BaseModel):
 
 
 class UserOut(UTCTimestampMixin):
-    
     "Public-facing representation of a user (never includes the password hash)."
 
     id: str
@@ -310,10 +307,9 @@ class UserOut(UTCTimestampMixin):
 # Chat
 # ------------------------------------------------------------------
 class ChatRequest(BaseModel):
-    
     "Payload sent when the user sends a chat message."
 
-    message: str = Field(..., min_length = 1, max_length = 2000)
+    message: str = Field(..., min_length=1, max_length=2000)
 
     session_id: Optional[str] = None  # None means: create a new session
 
@@ -325,7 +321,6 @@ class ChatRequest(BaseModel):
 
 
 class AgentInfo(BaseModel):
-    
     "Small summary of which agent handled a message and how."
 
     name: str
@@ -338,7 +333,6 @@ class AgentInfo(BaseModel):
 
 
 class ChatResponse(UTCTimestampMixin):
-    
     "Returned after the assistant generates a reply to a chat message."
 
     session_id: str
@@ -366,7 +360,6 @@ class ChatResponse(UTCTimestampMixin):
 # Session / History
 # ------------------------------------------------------------------
 class MessageOut(UTCTimestampMixin):
-    
     "A single message as returned to the frontend (part of session history)."
 
     id: str
@@ -389,7 +382,6 @@ class MessageOut(UTCTimestampMixin):
 
 
 class SessionOut(UTCTimestampMixin):
-    
     "Summary view of a chat session, used in the sidebar session list."
 
     id: str
@@ -410,7 +402,6 @@ class SessionOut(UTCTimestampMixin):
 
 
 class SessionDetailOut(UTCTimestampMixin):
-    
     "Full view of a chat session, including all its messages."
 
     id: str
@@ -429,7 +420,6 @@ class SessionDetailOut(UTCTimestampMixin):
 
 
 class SummaryResponse(BaseModel):
-    
     "Returned when requesting an AI-generated summary of a session."
 
     session_id: str
@@ -441,20 +431,18 @@ class SummaryResponse(BaseModel):
 # Feedback
 # ------------------------------------------------------------------
 class FeedbackRequest(BaseModel):
-    
     "Payload sent when a user rates a response."
 
     session_id: str
 
     message_id: Optional[str] = None
 
-    rating: int = Field(..., ge = 1, le = 5)
+    rating: int = Field(..., ge=1, le=5)
 
-    comment: Optional[str] = Field(None, max_length = 500)
+    comment: Optional[str] = Field(None, max_length=500)
 
 
 class FeedbackOut(UTCTimestampMixin):
-    
     "Feedback record as returned to the frontend."
 
     id: str
@@ -474,7 +462,6 @@ class FeedbackOut(UTCTimestampMixin):
 # Analytics
 # ------------------------------------------------------------------
 class AgentStat(BaseModel):
-    
     "How many messages a given agent handled, and what share of the total."
 
     agent: str
@@ -485,7 +472,6 @@ class AgentStat(BaseModel):
 
 
 class IntentStat(BaseModel):
-    
     "Count of messages classified under a given intent."
 
     intent: str
@@ -494,7 +480,6 @@ class IntentStat(BaseModel):
 
 
 class SentimentStat(BaseModel):
-    
     "Count of messages classified under a given sentiment."
 
     sentiment: str
@@ -503,7 +488,6 @@ class SentimentStat(BaseModel):
 
 
 class AnalyticsResponse(BaseModel):
-    
     "Full analytics dashboard payload."
 
     total_conversations: int
@@ -539,7 +523,6 @@ class AnalyticsResponse(BaseModel):
 # Knowledge Base (admin)
 # ------------------------------------------------------------------
 class KBDocOut(UTCTimestampMixin):
-    
     "A single knowledge-base document as tracked in the database."
 
     id: str
@@ -558,7 +541,6 @@ class KBDocOut(UTCTimestampMixin):
 
 
 class KBRebuildResponse(BaseModel):
-    
     "Returned after triggering a knowledge-base index rebuild."
 
     message: str
@@ -572,7 +554,6 @@ class KBRebuildResponse(BaseModel):
 # Generic
 # ------------------------------------------------------------------
 class SuccessResponse(BaseModel):
-    
     "Generic success message, used for simple confirmation endpoints."
 
     message: str

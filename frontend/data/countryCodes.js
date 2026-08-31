@@ -5,7 +5,6 @@
 // their country's code instead of typing it by hand.
 
 export const COUNTRY_CODES = [
-
   { name: "Afghanistan", iso: "AF", dial: "+93", flag: "🇦🇫" },
   { name: "Albania", iso: "AL", dial: "+355", flag: "🇦🇱" },
   { name: "Algeria", iso: "DZ", dial: "+213", flag: "🇩🇿" },
@@ -151,7 +150,12 @@ export const COUNTRY_CODES = [
   { name: "Rwanda", iso: "RW", dial: "+250", flag: "🇷🇼" },
   { name: "Saint Kitts and Nevis", iso: "KN", dial: "+1869", flag: "🇰🇳" },
   { name: "Saint Lucia", iso: "LC", dial: "+1758", flag: "🇱🇨" },
-  { name: "Saint Vincent and the Grenadines", iso: "VC", dial: "+1784", flag: "🇻🇨" },
+  {
+    name: "Saint Vincent and the Grenadines",
+    iso: "VC",
+    dial: "+1784",
+    flag: "🇻🇨",
+  },
   { name: "Samoa", iso: "WS", dial: "+685", flag: "🇼🇸" },
   { name: "San Marino", iso: "SM", dial: "+378", flag: "🇸🇲" },
   { name: "Sao Tome and Principe", iso: "ST", dial: "+239", flag: "🇸🇹" },
@@ -200,6 +204,5 @@ export const COUNTRY_CODES = [
   { name: "Vietnam", iso: "VN", dial: "+84", flag: "🇻🇳" },
   { name: "Yemen", iso: "YE", dial: "+967", flag: "🇾🇪" },
   { name: "Zambia", iso: "ZM", dial: "+260", flag: "🇿🇲" },
-  { name: "Zimbabwe", iso: "ZW", dial: "+263", flag: "🇿🇼" }
-
+  { name: "Zimbabwe", iso: "ZW", dial: "+263", flag: "🇿🇼" },
 ];

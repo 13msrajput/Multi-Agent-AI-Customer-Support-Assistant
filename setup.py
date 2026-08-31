@@ -31,7 +31,9 @@ def step1_check_env():
 
             print("✅ Created backend/.env from backend/.env.example")
 
-            print("⚠️ Please add your GROQ_API_KEY to backend/.env before starting the server.")
+            print(
+                "⚠️ Please add your GROQ_API_KEY to backend/.env before starting the server."
+            )
 
         else:
 
@@ -133,27 +135,18 @@ def step3_build_index():
                 if len(chunk) > 50:  # skip tiny chunks
 
                     file_chunks.append(
-                        
                         {
-                            
                             "text": chunk,
-                            
                             "source": txt_path.stem,
-                            
-                            "chunk_id": len(all_chunks) + len(file_chunks)
-                            
+                            "chunk_id": len(all_chunks) + len(file_chunks),
                         }
-                        
                     )
 
             all_chunks.extend(file_chunks)
 
             file_stats[txt_path.stem] = {
-
                 "chunks": len(file_chunks),
-
-                "file_size_bytes": txt_path.stat().st_size
-
+                "file_size_bytes": txt_path.stat().st_size,
             }
 
             print(f"✅ {txt_path.name:<35} {len(file_chunks)} chunks")
@@ -221,17 +214,11 @@ def step3_build_index():
         try:
 
             emb = model.encode(
-
                 batch,
-
-                batch_size = 2,
-
-                normalize_embeddings = True,
-
-                convert_to_numpy = True,
-
-                show_progress_bar = False
-
+                batch_size=2,
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+                show_progress_bar=False,
             )
 
             embeddings_list.append(emb.astype(np.float32))
@@ -346,13 +333,9 @@ def step3_build_index():
         for filename, stats in file_stats.items():
 
             doc = KnowledgeBaseDoc(
-                
-                filename = filename,
-
-                chunk_count = stats["chunks"],
-
-                file_size_bytes = stats["file_size_bytes"]
-                
+                filename=filename,
+                chunk_count=stats["chunks"],
+                file_size_bytes=stats["file_size_bytes"],
             )
 
             db.add(doc)

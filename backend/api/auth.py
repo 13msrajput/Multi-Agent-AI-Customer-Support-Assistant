@@ -20,7 +20,7 @@ from ..database.db import User
 
 # bcrypt-based password hashing context — "deprecated=auto" upgrades old
 # hashes automatically if the hashing scheme ever changes in the future
-pwd_context = CryptContext(schemes = ["bcrypt"], deprecated = "auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Reads the "Authorization: Bearer <token>" header from incoming requests
 bearer_scheme = HTTPBearer()
@@ -30,14 +30,12 @@ bearer_scheme = HTTPBearer()
 # Password helpers
 # ------------------------------------------------------------------
 def hash_password(password: str) -> str:
-    
     "Hash a plain-text password before storing it in the database."
 
     return pwd_context.hash(password)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    
     "Check a plain-text password against a stored bcrypt hash."
 
     return pwd_context.verify(plain, hashed)
@@ -48,21 +46,18 @@ def verify_password(plain: str, hashed: str) -> bool:
 # codes are never stored in plain text, same as passwords
 # ------------------------------------------------------------------
 def generate_otp_code() -> str:
-
     "Generate a random numeric OTP code, e.g. '482913', length set by settings.OTP_LENGTH."
 
     return "".join(str(secrets.randbelow(10)) for _ in range(settings.OTP_LENGTH))
 
 
 def hash_otp_code(code: str) -> str:
-
     "Hash an OTP code before storing it, same treatment as a password."
 
     return pwd_context.hash(code)
 
 
 def verify_otp_code(plain: str, hashed: str) -> bool:
-
     "Check a submitted OTP code against its stored hash."
 
     return pwd_context.verify(plain, hashed)
@@ -82,14 +77,12 @@ def verify_otp_code(plain: str, hashed: str) -> bool:
 # hash of it is not practically reversible or guessable.
 # ------------------------------------------------------------------
 def generate_reset_token() -> str:
-
     "Generate a random URL-safe password reset token."
 
     return secrets.token_urlsafe(32)
 
 
 def hash_reset_token(token: str) -> str:
-
     "Hash a reset token for storage/lookup — deterministic, unlike bcrypt."
 
     import hashlib
@@ -101,20 +94,20 @@ def hash_reset_token(token: str) -> str:
 # JWT helpers
 # ------------------------------------------------------------------
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    
     "Create a signed JWT access token containing the given payload plus an expiry timestamp."
 
     payload = data.copy()
 
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
 
     payload.update({"exp": expire})
 
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def create_email_verification_token(email: str) -> str:
-
     """
     Create a short-lived, narrow-purpose JWT proving an email address was
     just confirmed via OTP. Carries a "purpose" claim so it can never be
@@ -123,20 +116,16 @@ def create_email_verification_token(email: str) -> str:
     """
 
     payload = {
-
         "email": email,
-
         "purpose": "email_verification",
-
-        "exp": datetime.utcnow() + timedelta(minutes = settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES),
-
+        "exp": datetime.utcnow()
+        + timedelta(minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES),
     }
 
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm = settings.ALGORITHM)
+    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def verify_email_verification_token(token: str, expected_email: str) -> None:
-
     """
     Validate an email-verification token and confirm it was issued for
     exactly the email address being registered. Raises 401 if the token
@@ -147,39 +136,39 @@ def verify_email_verification_token(token: str, expected_email: str) -> None:
 
     if payload.get("purpose") != "email_verification":
 
-        raise HTTPException(status_code = 401, detail = "Invalid verification token")
+        raise HTTPException(status_code=401, detail="Invalid verification token")
 
     if payload.get("email") != expected_email:
 
-        raise HTTPException(status_code = 400, detail = "Verification token does not match this email address")
+        raise HTTPException(
+            status_code=400,
+            detail="Verification token does not match this email address",
+        )
 
 
 def decode_token(token: str) -> dict:
-    
     "Decode and verify a JWT token, raising a 401 error if it's invalid, tampered with, or expired."
 
     try:
 
-        return jwt.decode(token, settings.SECRET_KEY, algorithms = [settings.ALGORITHM])
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
 
     except JWTError:
 
         raise HTTPException(
-
-            status_code = status.HTTP_401_UNAUTHORIZED,
-
-            detail = "Invalid or expired token",
-
-            headers = {"WWW-Authenticate": "Bearer"}
-
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
 
 # -----------------------------------------------------------------------
 # FastAPI Dependencies — used with Depends(...) in route definitions
 # -----------------------------------------------------------------------
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme), db: Session = Depends(get_db)) -> User:
-    
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> User:
     "Dependency that extracts and validates the current user from the request's bearer token. Raises 401 if the token or user is invalid. Add this as a route parameter to require login for that endpoint."
 
     payload = decode_token(credentials.credentials)
@@ -188,19 +177,18 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_
 
     if not user_id:
 
-        raise HTTPException(status_code = 401, detail = "Invalid token payload")
+        raise HTTPException(status_code=401, detail="Invalid token payload")
 
     user = db.query(User).filter(User.id == user_id).first()
 
     if not user:
 
-        raise HTTPException(status_code = 401, detail = "User not found")
+        raise HTTPException(status_code=401, detail="User not found")
 
     return user
 
 
 def get_admin_user(current_user: User = Depends(get_current_user)) -> User:
-    
     """
     Dependency that additionally requires the current user to be an admin.
     Builds on get_current_user, so it also enforces basic login first.
@@ -208,7 +196,7 @@ def get_admin_user(current_user: User = Depends(get_current_user)) -> User:
 
     if not current_user.is_admin:
 
-        raise HTTPException(status_code = 403, detail = "Admin access required")
+        raise HTTPException(status_code=403, detail="Admin access required")
 
     return current_user
 
@@ -216,8 +204,12 @@ def get_admin_user(current_user: User = Depends(get_current_user)) -> User:
 # --------------------------------------------------------------------------
 # Optional Auth — returns None instead of raising if no token is provided
 # --------------------------------------------------------------------------
-def get_optional_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(HTTPBearer(auto_error = False)), db: Session = Depends(get_db)) -> Optional[User]:
-    
+def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(
+        HTTPBearer(auto_error=False)
+    ),
+    db: Session = Depends(get_db),
+) -> Optional[User]:
     "Like get_current_user, but for endpoints that work whether or not the caller is logged in — returns None instead of raising an error if no valid token is present."
 
     if not credentials:

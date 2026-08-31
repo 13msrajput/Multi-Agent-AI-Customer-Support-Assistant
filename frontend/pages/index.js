@@ -11,27 +11,17 @@ import { useRouter } from "next/router";
 import { authAPI } from "../services/api";
 
 export default function IndexPage() {
-
   const router = useRouter();
 
   useEffect(() => {
-
     // Runs once, right after the component mounts on the client
     if (authAPI.isLoggedIn()) {
-
       router.replace("/chat");
-
-    } 
-    
-    else {
-
+    } else {
       router.replace("/login");
-
     }
-
   }, []);
 
   // Nothing to render — this page only redirects
   return null;
-
 }

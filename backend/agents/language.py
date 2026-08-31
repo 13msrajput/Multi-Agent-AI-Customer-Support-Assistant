@@ -35,11 +35,14 @@ from typing import List
 # ------------------------------------------------------------------
 # Unicode script ranges
 # ------------------------------------------------------------------
-_DEVANAGARI_RANGE = ("\u0900", "\u097f")   # Hindi, Marathi, Nepali, Sanskrit, Konkani, Maithili
+_DEVANAGARI_RANGE = (
+    "\u0900",
+    "\u097f",
+)  # Hindi, Marathi, Nepali, Sanskrit, Konkani, Maithili
 
-_BENGALI_RANGE = ("\u0980", "\u09ff")      # Bengali, Assamese
+_BENGALI_RANGE = ("\u0980", "\u09ff")  # Bengali, Assamese
 
-_GURMUKHI_RANGE = ("\u0a00", "\u0a7f")     # Punjabi
+_GURMUKHI_RANGE = ("\u0a00", "\u0a7f")  # Punjabi
 
 _GUJARATI_RANGE = ("\u0a80", "\u0aff")
 
@@ -53,15 +56,18 @@ _KANNADA_RANGE = ("\u0c80", "\u0cff")
 
 _MALAYALAM_RANGE = ("\u0d00", "\u0d7f")
 
-_ARABIC_RANGE = ("\u0600", "\u06ff")       # also covers Urdu, which is written in a Perso-Arabic script
+_ARABIC_RANGE = (
+    "\u0600",
+    "\u06ff",
+)  # also covers Urdu, which is written in a Perso-Arabic script
 
-_JAPANESE_RANGE = ("\u3040", "\u30ff")     # Hiragana/Katakana
+_JAPANESE_RANGE = ("\u3040", "\u30ff")  # Hiragana/Katakana
 
-_CHINESE_RANGE = ("\u4e00", "\u9fff")      # CJK
+_CHINESE_RANGE = ("\u4e00", "\u9fff")  # CJK
 
-_CYRILLIC_RANGE = ("\u0400", "\u04ff")     # Russian and other Cyrillic-script languages
+_CYRILLIC_RANGE = ("\u0400", "\u04ff")  # Russian and other Cyrillic-script languages
 
-_HANGUL_RANGE = ("\uac00", "\ud7a3")       # Korean
+_HANGUL_RANGE = ("\uac00", "\ud7a3")  # Korean
 
 
 # ------------------------------------------------------------------
@@ -70,16 +76,16 @@ _HANGUL_RANGE = ("\uac00", "\ud7a3")       # Korean
 # since a shared word can't be used to tell them apart)
 # ------------------------------------------------------------------
 _MARATHI_KEYWORDS: List[str] = [
-    
-    "आहे", "मला", "तुम्ही", "काय", "कसे", "पाहिजे", "मदत हवी"
-    
+    "आहे",
+    "मला",
+    "तुम्ही",
+    "काय",
+    "कसे",
+    "पाहिजे",
+    "मदत हवी",
 ]
 
-_NEPALI_KEYWORDS: List[str] = [
-
-    "छ", "तपाईं", "हजुर", "मलाई", "सहयोग", "चाहियो"
-
-]
+_NEPALI_KEYWORDS: List[str] = ["छ", "तपाईं", "हजुर", "मलाई", "सहयोग", "चाहियो"]
 
 
 # ------------------------------------------------------------------
@@ -87,38 +93,57 @@ _NEPALI_KEYWORDS: List[str] = [
 # languages written in the Latin alphabet
 # ------------------------------------------------------------------
 _URDU_KEYWORDS: List[str] = [
-    
-    "شکریہ", "براہ کرم", "مدد", "مسئلہ", "قیمت",
-    
+    "شکریہ",
+    "براہ کرم",
+    "مدد",
+    "مسئلہ",
+    "قیمت",
 ]
 
 _SPANISH_KEYWORDS: List[str] = [
-    
-    "hola", "como", "gracias", "problema", "ayuda", "quiero",
-    
-    "necesito", "tengo", "precio", "reembolso", "factura", "por favor"
-    
+    "hola",
+    "como",
+    "gracias",
+    "problema",
+    "ayuda",
+    "quiero",
+    "necesito",
+    "tengo",
+    "precio",
+    "reembolso",
+    "factura",
+    "por favor",
 ]
 
 _FRENCH_KEYWORDS: List[str] = [
-
-    "bonjour", "merci", "problème", "aide", "comment", "voulez",
-
-    "remboursement", "facture", "prix", "produit", "s'il vous plaît"
-
+    "bonjour",
+    "merci",
+    "problème",
+    "aide",
+    "comment",
+    "voulez",
+    "remboursement",
+    "facture",
+    "prix",
+    "produit",
+    "s'il vous plaît",
 ]
 
 _GERMAN_KEYWORDS: List[str] = [
-
-    "danke", "bitte", "hilfe", "problem", "hallo", "ich",
-
-    "rückerstattung", "rechnung", "preis", "produkt"
-
+    "danke",
+    "bitte",
+    "hilfe",
+    "problem",
+    "hallo",
+    "ich",
+    "rückerstattung",
+    "rechnung",
+    "preis",
+    "produkt",
 ]
 
 
 def detect_language(text: str) -> str:
-    
     """
     Detect the likely language of a customer message using unicode-range
     checks (for distinct scripts) and common keyword matches (for

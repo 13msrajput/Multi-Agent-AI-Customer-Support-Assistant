@@ -23,7 +23,11 @@ from .database.db import create_tables
 # ------------------------------------------------------------------
 # Logging setup — prints timestamped log lines to stdout
 # ------------------------------------------------------------------
-logging.basicConfig(level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(name)s — %(message)s", handlers = [logging.StreamHandler(sys.stdout)])
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +38,6 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    
     """
     Startup tasks:
     1. Create DB tables
@@ -57,21 +60,23 @@ async def lifespan(app: FastAPI):
     # Only reload saved index from disk — don't build/embed on startup
     # This avoids loading the 90MB embedding model at startup (OOM on free tier)
     if retriever._index_path.exists() and retriever._chunks_path.exists():
-        
+
         try:
-            
+
             retriever._load_from_disk()
-            
+
             retriever._ready = True
-            
-            logger.info(f"RAG index reloaded from disk ({retriever.chunk_count} chunks).")
-            
+
+            logger.info(
+                f"RAG index reloaded from disk ({retriever.chunk_count} chunks)."
+            )
+
         except Exception as e:
-            
+
             logger.warning(f"Could not reload index: {e}. Will build on first request.")
-            
+
     else:
-        
+
         logger.warning("No saved FAISS index found. Will build on first request.")
 
     logger.info("Startup complete. Embedding loads on first request.")
@@ -95,7 +100,9 @@ async def lifespan(app: FastAPI):
 
         except Exception as e:
 
-            logger.warning(f"Could not preload embedding model: {e}. Will load on first request instead.")
+            logger.warning(
+                f"Could not preload embedding model: {e}. Will load on first request instead."
+            )
 
     # Start the background job that emails due scheduled analytics reports
     from .scheduler import start_scheduler, stop_scheduler
@@ -111,39 +118,24 @@ async def lifespan(app: FastAPI):
 # FastAPI application instance
 # ------------------------------------------------------------------
 app = FastAPI(
-
-    title = settings.APP_NAME,
-
-    description = (
-        
-        """
+    title=settings.APP_NAME,
+    description=("""
         Multi-Agent AI Customer Support System for TechMart Electronics.
         Powered by Retrieval-Augmented Generation (RAG) and specialized AI agents.
-        """
-        
-    ),
-
-    version = settings.APP_VERSION,
-
-    lifespan = lifespan,
-
-    docs_url = "/docs",
-
-    redoc_url = "/redoc"
-
+        """),
+    version=settings.APP_VERSION,
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # -----------------------------------------------------------------------------------
 # CORS — allow the frontend (running on a different port/domain) to call this API
 # -----------------------------------------------------------------------------------
 _allowed_origins = [
-
     "http://localhost:3000",  # Next.js dev server
-
     "http://localhost:5173",  # Vite dev server
-
-    "https://techmart-ai-support.vercel.app"
-
+    "https://techmart-ai-support.vercel.app",
 ]
 
 # Also allow whatever FRONTEND_URL is configured to (the deployed Vercel
@@ -154,17 +146,11 @@ if settings.FRONTEND_URL and settings.FRONTEND_URL not in _allowed_origins:
     _allowed_origins.append(settings.FRONTEND_URL)
 
 app.add_middleware(
-    
     CORSMiddleware,
-    
-    allow_origins = _allowed_origins,
-    
-    allow_credentials = True,
-    
-    allow_methods = ["*"],
-    
-    allow_headers = ["*"]
-    
+    allow_origins=_allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # ------------------------------------------------------------------
@@ -179,11 +165,9 @@ app.include_router(router, prefix="/api")
 # keep the Render free-tier instance from spinning down on inactivity.
 # ------------------------------------------------------------------
 @app.get("/")
-
 async def root_health_check():
 
     return {"status": "ok", "service": settings.APP_NAME}
-
 
 
 # ---------------------------------------------------------------------
@@ -194,7 +178,9 @@ frontend_dist = Path(__file__).parent.parent / "frontend" / "out"
 
 if frontend_dist.exists():
 
-    app.mount("/", StaticFiles(directory = str(frontend_dist), html = True), name = "frontend")
+    app.mount(
+        "/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend"
+    )
 
     logger.info(f"Serving frontend from {frontend_dist}")
 
@@ -206,4 +192,4 @@ if __name__ == "__main__":
 
     import uvicorn
 
-    uvicorn.run("backend.main:app", host="0.0.0.0", port = 8000, reload = True)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class TextChunk:
-    
     "A single chunk of text along with metadata about where it came from."
 
     def __init__(self, text: str, source: str, chunk_id: int):
@@ -32,18 +31,17 @@ class TextChunk:
 
     def __repr__(self):
 
-        return (f"TextChunk(source = {self.source}, id = {self.chunk_id}, len = {len(self.text)})")
+        return f"TextChunk(source = {self.source}, id = {self.chunk_id}, len = {len(self.text)})"
 
 
 def load_text_file(path: Path) -> str:
-    
     "Read a .txt file and return its content, trying a few common encodings in order until one works. Handles files that aren't strictly UTF-8 (e.g. exported from Windows tools)."
 
     for encoding in ["utf-8", "utf-8-sig", "latin-1", "cp1252"]:
 
         try:
 
-            with open(path, "r", encoding = encoding, errors = "ignore") as f:
+            with open(path, "r", encoding=encoding, errors="ignore") as f:
 
                 return f.read()
 
@@ -56,7 +54,6 @@ def load_text_file(path: Path) -> str:
 
 
 def split_text(text: str, chunk_size: int = 600, chunk_overlap: int = 80) -> List[str]:
-    
     """
     Split text into overlapping chunks by character count.
     Tries to break on a sentence boundary ('. ') near the target chunk
@@ -105,8 +102,9 @@ def split_text(text: str, chunk_size: int = 600, chunk_overlap: int = 80) -> Lis
     return chunks
 
 
-def load_knowledge_base(kb_dir: Path, chunk_size: int = 600, chunk_overlap: int = 80) -> Tuple[List[TextChunk], dict]:
-    
+def load_knowledge_base(
+    kb_dir: Path, chunk_size: int = 600, chunk_overlap: int = 80
+) -> Tuple[List[TextChunk], dict]:
     "Load every .txt file from the knowledge base directory, split each one into chunks, and return (all_chunks, per_file_stats)."
 
     if not kb_dir.exists():
@@ -146,21 +144,14 @@ def load_knowledge_base(kb_dir: Path, chunk_size: int = 600, chunk_overlap: int 
                 all_chunks.append(TextChunk(chunk_text, source_name, idx))
 
             stats[source_name] = {
-
                 "path": str(txt_path),
-
                 "chunks": len(text_chunks),
-
-                "file_size_bytes": file_size
-
+                "file_size_bytes": file_size,
             }
 
             logger.info(
-
                 f"Loaded '{source_name}': {len(text_chunks)} chunks "
-
                 f"({file_size} bytes)"
-
             )
 
         except Exception as e:
@@ -172,11 +163,8 @@ def load_knowledge_base(kb_dir: Path, chunk_size: int = 600, chunk_overlap: int 
             logger.error(traceback.format_exc())
 
     logger.info(
-
         f"Knowledge base loaded: {len(txt_files)} files → "
-
         f"{len(all_chunks)} total chunks"
-
     )
 
     return all_chunks, stats

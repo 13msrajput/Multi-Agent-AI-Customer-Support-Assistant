@@ -70,34 +70,16 @@ Every incoming message is classified before being routed to one of five domain a
 ```
 Multi-Agent-AI-Customer-Support-Assistant-using-RAG-and-LLMs/
 ├── backend/
-│   ├── main.py                     # FastAPI app, lifespan startup, CORS, static frontend mount
-│   ├── config.py                   # Settings — env-driven, LLM provider selection
-│   ├── agents/
-│   │   ├── base.py                 # BaseAgent — shared prompt building, language detection, RAG call
-│   │   ├── agents.py               # BillingAgent, TechnicalAgent, ProductAgent, ComplaintAgent, FAQAgent
-│   │   ├── router.py               # AgentRouter — intent/sentiment detection, agent dispatch
-│   │   └── llm_client.py           # LLMClient — Groq/OpenAI/Ollama wrapper + fallback templates
-│   ├── rag/
-│   │   ├── document_processor.py   # .txt loading, chunking
-│   │   ├── embeddings.py           # EmbeddingManager — sentence-transformers wrapper
-│   │   └── retriever.py            # FAISSRetriever — index build/reload/search
-│   ├── vectorstore/faiss_index/    # Persisted FAISS index (faiss.index, chunks.pkl)
-│   ├── api/
-│   │   ├── routes.py               # All HTTP endpoints (auth, chat, sessions, analytics, admin, tickets)
-│   │   ├── auth.py                 # JWT + bcrypt auth dependencies
-│   │   ├── email_service.py        # SendGrid/SMTP notifications
-│   │   └── whatsapp_service.py     # Twilio WhatsApp notifications
-│   ├── database/db.py              # SQLAlchemy models + session factory
-│   └── models/schemas.py           # Pydantic request/response models
+├── datasets
 ├── frontend/
-│   ├── pages/                      # index.js, login.js, register.js, chat.js
-│   ├── services/api.js             # Central fetch wrapper, JWT storage
-│   └── package.json
-├── knowledge_base/                 # faq.txt, pricing.txt, products.txt, refund_policy.txt, etc.
-├── setup.py                        # One-time setup: .env check, DB tables, admin user, FAISS build
-├── requirements.txt
-├── render.yaml                     # Render.com deployment config
-└── README.md
+├── knowledge_base/            
+├── .gitignore
+├── README.md
+├── package.json
+├── render.yaml                     
+├── requirements.txt         
+├── runtime.txt  
+└── setup.py                        
 ```
 
 ---
@@ -143,19 +125,6 @@ The app runs without any LLM key configured, in a fallback "demo mode" using sta
 [![Kaggle](https://img.shields.io/badge/Kaggle-20BEFF?style=flat-square&logo=kaggle&logoColor=white)](https://www.kaggle.com/mohitsinghrajput1307)
 [![LeetCode](https://img.shields.io/badge/LeetCode-181717?style=flat-square&logo=leetcode&logoColor=FFA116)](https://leetcode.com/u/MOHIT_SINGH_RAJPUT/)
 [![Email](https://img.shields.io/badge/Email-D14836?style=flat-square&logo=gmail&logoColor=white)](mailto:mohitsinghrajput1307@gmail.com)
-
----
-
-## Acknowledgements
-
-* FastAPI
-* Next.js
-* FAISS (Meta AI)
-* Sentence-Transformers
-* Groq / OpenAI
-* SQLAlchemy
-* Twilio
-* SendGrid
 
 ---
 

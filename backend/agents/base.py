@@ -21,7 +21,6 @@ COMPANY = settings.COMPANY_NAME
 
 
 class BaseAgent:
-    
     """
     Base class for all TechMart specialized agents.
 
@@ -30,7 +29,7 @@ class BaseAgent:
         - domain: short identifier used in logs and the database
         - relevant_sources: which knowledge-base documents this agent should prioritise
         - role_description: what this particular agent is responsible for
-        """
+    """
 
     # Default values — subclasses override these
     name: str = "General Support"
@@ -52,13 +51,11 @@ class BaseAgent:
     # ------------------------------------------------------------------------------------
     @property
     def role_description(self) -> str:
-        
         "Short description of this agent's job. Subclasses override this."
 
         return "Handle general customer inquiries and provide helpful support."
 
     def build_system_prompt(self, extra: str = "") -> str:
-        
         """
         Construct the full system prompt sent to the LLM, including
         the language rule, response guidelines, and company info.
@@ -67,61 +64,33 @@ class BaseAgent:
         """
 
         base = (
-
             f"You are {self.name}, a specialized AI customer support agent for {COMPANY}.\n\n"
-
             f"Your role: {self.role_description}\n\n"
-
             "CRITICAL LANGUAGE RULE — MUST FOLLOW:\n"
-
             "1. Detect the language of the LAST customer message.\n"
-
             "2. You MUST respond in the EXACT SAME language.\n"
-
             "3. If the customer writes in Hindi, respond ONLY in Hindi.\n"
-
             "4. If the customer writes in Spanish, respond ONLY in Spanish.\n"
-
             "5. If the customer writes in English, respond ONLY in English.\n"
-
             "6. NEVER mix languages in a single response.\n"
-
             "7. This rule overrides everything else.\n\n"
-
             "GUIDELINES:\n"
-
             "- Be empathetic, professional, and solution-oriented.\n"
-
             "- Always base your answers on the provided CONTEXT from our knowledge base.\n"
-
             "- If the CONTEXT does not contain enough information, say so clearly and offer to escalate.\n"
-
             "- Do not invent policies, prices, or product details not mentioned in the CONTEXT.\n"
-
             "- Keep responses concise (3-5 sentences unless the topic requires more detail).\n"
-
             "- When referencing specific policies or prices, mention the source.\n"
-
             "- If you cannot resolve the issue, offer: email support@techmartelectronics.com or call 1-800-TECHMART.\n"
-
             "- End with a friendly close and ask if there is anything else you can help with.\n\n"
-
             "FORMATTING RULE — MUST FOLLOW:\n"
-
             "- Write in plain text only. Do NOT use markdown symbols like **bold**, *italic*, # headers, or bullet-point dashes (-).\n"
-
             "- For lists, write each item as a plain sentence or use a simple numbered format (1., 2., 3.) instead of dashes or asterisks.\n"
-
             "- Keep your full answer within about 120 words so it fits in the reply length limit — do not start a list or sentence you cannot finish.\n\n"
-
             f"Company: {COMPANY}\n"
-
             "Support Phone: 1-800-TECHMART (1-800-832-4627)\n"
-
             "Support Email: support@techmartelectronics.com\n"
-
             "Business Hours: Mon-Fri 8 AM-9 PM EST; Sat-Sun 9 AM-6 PM EST\n"
-
         )
 
         # Append any extra agent-specific instructions passed in by a subclass
@@ -134,8 +103,13 @@ class BaseAgent:
     # --------------------------------------------------------------------
     # Main entry point — this is what routes.py calls to get a response
     # --------------------------------------------------------------------
-    async def respond(self, user_message: str, conversation_history: Optional[List[dict]] = None, top_k: int = None, preferred_language: Optional[str] = None) -> dict:
-        
+    async def respond(
+        self,
+        user_message: str,
+        conversation_history: Optional[List[dict]] = None,
+        top_k: int = None,
+        preferred_language: Optional[str] = None,
+    ) -> dict:
         """
         Generate a response to the user message.
 
@@ -152,10 +126,14 @@ class BaseAgent:
         history = conversation_history or []
 
         # Step 1: Retrieve relevant context from the knowledge base
-        context, sources, retrieved = await self._retrieve_context(user_message, top_k or settings.TOP_K_RESULTS)
+        context, sources, retrieved = await self._retrieve_context(
+            user_message, top_k or settings.TOP_K_RESULTS
+        )
 
         # Step 2: Build the message list (recent history + current message)
-        messages = self._build_messages(user_message, history, context, preferred_language)
+        messages = self._build_messages(
+            user_message, history, context, preferred_language
+        )
 
         # Step 3: Build the system prompt, falling back to a simple default if it fails
         try:
@@ -171,13 +149,9 @@ class BaseAgent:
         if not system:
 
             system = (
-
                 f"You are {self.name}, a helpful customer support agent for TechMart Electronics. "
-
                 f"Your role: {self.role_description}. Be professional, empathetic, and helpful. "
-
                 f"Base answers on the knowledge base context provided."
-
             )
 
         if preferred_language:
@@ -188,19 +162,12 @@ class BaseAgent:
             lang_hint = preferred_language
 
             system += (
-
                 f"\n\nCRITICAL LANGUAGE INSTRUCTION:\n"
-
                 f"The customer has selected {lang_hint} as their preferred language.\n"
-
                 f"You MUST respond in {lang_hint} ONLY, regardless of what language "
-
                 f"the customer's message is written in.\n"
-
                 f"Ignore the language of the message text and of previous messages — "
-
                 f"always reply in {lang_hint}."
-
             )
 
         else:
@@ -211,17 +178,11 @@ class BaseAgent:
             lang_hint = detect_language(user_message)
 
             system += (
-
                 f"\n\nCRITICAL LANGUAGE INSTRUCTION:\n"
-
                 f"The customer's CURRENT message language is: {lang_hint}\n"
-
                 f"You MUST respond in {lang_hint} ONLY.\n"
-
                 f"Ignore the language of previous messages in the conversation.\n"
-
                 f"Base your language choice ONLY on the current message above."
-
             )
 
         # If we retrieved any knowledge-base context, attach it to the system prompt
@@ -230,25 +191,21 @@ class BaseAgent:
             system += f"\n\nRELEVANT KNOWLEDGE BASE CONTEXT:\n{context}"
 
         # Step 4: Call the LLM with the assembled messages and system prompt
-        response_text = await self._llm.chat(messages = messages, system = system)
+        response_text = await self._llm.chat(messages=messages, system=system)
 
         return {
-
             "response": response_text,
-
             "context_retrieved": retrieved,
-
             "sources": sources,
-
-            "agent": self.domain
-
+            "agent": self.domain,
         }
 
     # ------------------------------------------------------------------
     # Internal helper methods
     # ------------------------------------------------------------------
-    async def _retrieve_context(self, query: str, top_k: int) -> tuple[str, List[str], bool]:
-        
+    async def _retrieve_context(
+        self, query: str, top_k: int
+    ) -> tuple[str, List[str], bool]:
         """
         Retrieve relevant chunks from the knowledge base and format them as context text.
 
@@ -266,7 +223,9 @@ class BaseAgent:
         # means "no filter — search everything".
         source_filter = self.relevant_sources or None
 
-        results: List[RetrievalResult] = self._retriever.retrieve(query, top_k = top_k, source_filter = source_filter)
+        results: List[RetrievalResult] = self._retriever.retrieve(
+            query, top_k=top_k, source_filter=source_filter
+        )
 
         # No matching chunks found
         if not results:
@@ -281,8 +240,13 @@ class BaseAgent:
 
         return context, sources, True
 
-    def _build_messages(self, user_message: str, history: List[dict], context: str, preferred_language: Optional[str] = None) -> List[dict]:
-        
+    def _build_messages(
+        self,
+        user_message: str,
+        history: List[dict],
+        context: str,
+        preferred_language: Optional[str] = None,
+    ) -> List[dict]:
         "Build the list of chat messages to send to the LLM: a limited window of recent conversation history, plus the current user message."
 
         messages = []
@@ -300,7 +264,12 @@ class BaseAgent:
         # auto-detecting from the message text, same as in respond() above.
         lang = preferred_language or detect_language(user_message)
 
-        messages.append({"role": "user", "content": f"{user_message}\n\n[SYSTEM NOTE: Respond in {lang} only]"})
+        messages.append(
+            {
+                "role": "user",
+                "content": f"{user_message}\n\n[SYSTEM NOTE: Respond in {lang} only]",
+            }
+        )
 
         return messages
 

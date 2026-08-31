@@ -17,14 +17,14 @@ BRAND_DANGER = "#d1372a"
 
 
 def is_email_configured() -> bool:
-
     "True if either SendGrid or SMTP credentials are set — either is enough to send email."
 
-    return bool(settings.SENDGRID_API_KEY) or bool(settings.SMTP_USER and settings.SMTP_PASSWORD)
+    return bool(settings.SENDGRID_API_KEY) or bool(
+        settings.SMTP_USER and settings.SMTP_PASSWORD
+    )
 
 
 def _wrap_html(preheader: str, body_html: str) -> str:
-
     """
     Wraps template-specific body_html in a consistent branded shell:
     a dark header with the TechMart wordmark, a white content card, and
@@ -75,14 +75,12 @@ Phone: 1-800-TECHMART &nbsp;&middot;&nbsp; Email: <a href="mailto:support@techma
 
 
 def _badge(text: str, color: str) -> str:
-
     "A small pill-shaped label, e.g. for priority or status."
 
     return f'<span style="display:inline-block; padding:3px 10px; border-radius:999px; background:{color}1a; color:{color}; font-size:12px; font-weight:600;">{text}</span>'
 
 
 def _detail_row(label: str, value: str) -> str:
-
     "One label/value row inside a details table."
 
     return f"""<tr>
@@ -92,7 +90,6 @@ def _detail_row(label: str, value: str) -> str:
 
 
 def send_email(to_email: str, subject: str, body: str, html_body: str = None) -> bool:
-
     """
     Sends an email. If html_body is provided, sends a multipart email
     (HTML for clients that render it, plain-text body as the fallback).
@@ -107,9 +104,9 @@ def send_email(to_email: str, subject: str, body: str, html_body: str = None) ->
         import os
 
         api_key = os.getenv("SENDGRID_API_KEY", "")
-        
+
         if not api_key:
-            
+
             # Fallback to SMTP if no SendGrid key
             return _send_smtp(to_email, subject, body, html_body)
 
@@ -125,48 +122,44 @@ def send_email(to_email: str, subject: str, body: str, html_body: str = None) ->
         # since a SendGrid-only setup (no SMTP configured) would otherwise
         # send an empty "from" address and SendGrid would silently reject
         # the whole request.
-        from_email = settings.SENDGRID_FROM_EMAIL or settings.SUPPORT_EMAIL or settings.SMTP_USER
+        from_email = (
+            settings.SENDGRID_FROM_EMAIL or settings.SUPPORT_EMAIL or settings.SMTP_USER
+        )
 
         if not from_email:
 
-            logger.error("SendGrid send failed: no from-address configured (set SENDGRID_FROM_EMAIL).")
+            logger.error(
+                "SendGrid send failed: no from-address configured (set SENDGRID_FROM_EMAIL)."
+            )
 
             return False
 
-        payload = _json.dumps({
-            
-            "personalizations": [{"to": [{"email": to_email}]}],
-            
-            "from": {"email": from_email, "name": "TechMart Support"},
-            
-            "subject": subject,
-            
-            "content": content
-            
-        }).encode()
+        payload = _json.dumps(
+            {
+                "personalizations": [{"to": [{"email": to_email}]}],
+                "from": {"email": from_email, "name": "TechMart Support"},
+                "subject": subject,
+                "content": content,
+            }
+        ).encode()
 
         req = urllib.request.Request(
-            
             "https://api.sendgrid.com/v3/mail/send",
-            data = payload,
-
-            headers = {
-
+            data=payload,
+            headers={
                 "Authorization": f"Bearer {api_key}",
-
-                "Content-Type": "application/json"
-
+                "Content-Type": "application/json",
             },
-
-            method = "POST"
-
+            method="POST",
         )
 
         try:
 
-            with urllib.request.urlopen(req, timeout = 10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:
 
-                logger.info(f"Email sent via SendGrid to {to_email} (status {resp.status})")
+                logger.info(
+                    f"Email sent via SendGrid to {to_email} (status {resp.status})"
+                )
 
                 return True
 
@@ -177,7 +170,7 @@ def send_email(to_email: str, subject: str, body: str, html_body: str = None) ->
             # Surfacing that body is the difference between "email send
             # failed" and actually knowing why — without this, every
             # SendGrid rejection just looks like a generic HTTP error.
-            error_body = e.read().decode(errors = "replace")
+            error_body = e.read().decode(errors="replace")
 
             logger.error(f"SendGrid rejected the email (HTTP {e.code}): {error_body}")
 
@@ -262,10 +255,17 @@ TechMart Electronics Support Team"""
 <p style="margin:0; font-size:13px; color:{BRAND_MUTED}; line-height:1.6;">This code expires in {expires_in_minutes} minutes. If you didn't request this code, you can safely ignore this email.</p>
 """
 
-    return send_email(to_email, subject, text_body, _wrap_html(f"Your verification code is {code}", body_html))
+    return send_email(
+        to_email,
+        subject,
+        text_body,
+        _wrap_html(f"Your verification code is {code}", body_html),
+    )
 
 
-def send_password_reset_email(to_email: str, reset_url: str, expires_in_minutes: int) -> bool:
+def send_password_reset_email(
+    to_email: str, reset_url: str, expires_in_minutes: int
+) -> bool:
 
     subject = "Reset your TechMart password"
 
@@ -288,11 +288,17 @@ TechMart Electronics Support Team"""
 <p style="margin:0; font-size:13px; color:{BRAND_MUTED}; line-height:1.6;">This link expires in {expires_in_minutes} minutes. If you didn't request this, you can safely ignore this email — your password will not be changed.</p>
 """
 
-    return send_email(to_email, subject, text_body, _wrap_html("Reset your TechMart password", body_html))
+    return send_email(
+        to_email,
+        subject,
+        text_body,
+        _wrap_html("Reset your TechMart password", body_html),
+    )
 
 
-def send_analytics_report_email(to_email: str, frequency: str, period_label: str, stats: dict) -> bool:
-
+def send_analytics_report_email(
+    to_email: str, frequency: str, period_label: str, stats: dict
+) -> bool:
     """
     Emails a summary analytics report. stats is the same shape the
     /analytics endpoint returns (as a plain dict): total_conversations,
@@ -301,9 +307,15 @@ def send_analytics_report_email(to_email: str, frequency: str, period_label: str
 
     subject = f"Your {frequency} TechMart analytics report — {period_label}"
 
-    resolution_display = f"{stats.get('resolution_rate')}%" if stats.get("resolution_rate") is not None else "N/A"
+    resolution_display = (
+        f"{stats.get('resolution_rate')}%"
+        if stats.get("resolution_rate") is not None
+        else "N/A"
+    )
 
-    rating_display = f"{stats.get('average_rating'):.1f}" if stats.get("average_rating") else "N/A"
+    rating_display = (
+        f"{stats.get('average_rating'):.1f}" if stats.get("average_rating") else "N/A"
+    )
 
     text_body = f"""Your {frequency} analytics summary for {period_label}:
 
@@ -329,10 +341,17 @@ TechMart Electronics Support Team"""
 <p style="margin:0; font-size:13px; color:{BRAND_MUTED}; line-height:1.6;">Open the app and go to Analytics for the full breakdown by agent, intent, and sentiment.</p>
 """
 
-    return send_email(to_email, subject, text_body, _wrap_html(f"Your {frequency} analytics report", body_html))
+    return send_email(
+        to_email,
+        subject,
+        text_body,
+        _wrap_html(f"Your {frequency} analytics report", body_html),
+    )
 
 
-def send_escalation_emails(customer_name, customer_email, session_id, session_title = "Support Query"):
+def send_escalation_emails(
+    customer_name, customer_email, session_id, session_title="Support Query"
+):
 
     reference = f"ESC-{session_id[:8].upper()}"
 
@@ -392,35 +411,35 @@ Contact this customer within 2 business hours."""
 """
 
     customer_sent = send_email(
-
         customer_email,
-
         f"[TechMart] Your Case {reference} — Human Agent Requested",
-
         customer_text,
-
-        _wrap_html(f"Your case {reference} has been escalated", customer_html)
-
+        _wrap_html(f"Your case {reference} has been escalated", customer_html),
     )
-    
+
     support_sent = send_email(
-
         support_email,
-
         f"ESCALATION — {customer_name} [{reference}]",
-
         support_text,
-
-        _wrap_html(f"Escalation alert for {customer_name}", support_html)
-
+        _wrap_html(f"Escalation alert for {customer_name}", support_html),
     )
 
-    return {"customer_email_sent": customer_sent, "support_email_sent": support_sent, "reference": reference}
+    return {
+        "customer_email_sent": customer_sent,
+        "support_email_sent": support_sent,
+        "reference": reference,
+    }
 
 
-def send_ticket_created_email(customer_name, customer_email, ticket_number, subject, priority):
+def send_ticket_created_email(
+    customer_name, customer_email, ticket_number, subject, priority
+):
 
-    priority_color = {"high": BRAND_DANGER, "medium": BRAND_WARNING, "low": BRAND_SUCCESS}.get(priority.lower(), BRAND_MUTED)
+    priority_color = {
+        "high": BRAND_DANGER,
+        "medium": BRAND_WARNING,
+        "low": BRAND_SUCCESS,
+    }.get(priority.lower(), BRAND_MUTED)
 
     text_body = f"""Dear {customer_name},
 
@@ -453,15 +472,10 @@ TechMart Electronics Support Team"""
 """
 
     return send_email(
-
         customer_email,
-
         f"[TechMart] Ticket {ticket_number} Created — {priority.upper()} Priority",
-
         text_body,
-
-        _wrap_html(f"Your ticket {ticket_number} has been created", body_html)
-
+        _wrap_html(f"Your ticket {ticket_number} has been created", body_html),
     )
 
 
@@ -476,19 +490,14 @@ Thank you for rating your experience: {rating}/5
 TechMart Electronics Support Team"""
 
     stars_html = "".join(
-
-        f'<span style="color:{BRAND_WARNING if i < rating else BRAND_BORDER}; font-size:22px;">&#9733;</span>' for i in range(5)
-
+        f'<span style="color:{BRAND_WARNING if i < rating else BRAND_BORDER}; font-size:22px;">&#9733;</span>'
+        for i in range(5)
     )
 
     follow_up = (
-
         "We're glad to hear you had a great experience."
-
         if rating >= 4
-
         else "We appreciate your honest feedback and will use it to improve our service."
-
     )
 
     body_html = f"""
@@ -501,13 +510,8 @@ TechMart Electronics Support Team"""
 """
 
     return send_email(
-
         customer_email,
-
         "[TechMart] Thank You for Your Feedback",
-
         text_body,
-
-        _wrap_html("Thank you for your feedback", body_html)
-
+        _wrap_html("Thank you for your feedback", body_html),
     )

@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 # Intent -> template fallback responses, used only when no LLM API key is set
 # -----------------------------------------------------------------------------
 FALLBACK_RESPONSES = {
-
     "billing": (
-
         """
         I can see you have a billing-related question. 
         
@@ -29,11 +27,8 @@ FALLBACK_RESPONSES = {
 
         Our billing team is available Mon–Fri 8AM–9PM EST.
         """
-
     ),
-
     "technical": (
-
         """
         Thank you for reaching out about a technical issue. 
         
@@ -43,11 +38,8 @@ FALLBACK_RESPONSES = {
 
         We're available Mon–Fri 8AM–9PM EST.
         """
-
     ),
-
     "product": (
-
         """
         Great question about our products! 
         
@@ -57,11 +49,8 @@ FALLBACK_RESPONSES = {
 
         catalog with detailed specifications and pricing.
         """
-
     ),
-
     "complaint": (
-
         """
         I sincerely apologize for the experience you've had. 
         
@@ -71,11 +60,8 @@ FALLBACK_RESPONSES = {
 
         You can also reach us directly at complaints@techmartelectronics.com or 1-800-TECHMART.
         """
-
     ),
-
     "refund": (
-
         """
         I understand you'd like information about a refund. 
         
@@ -83,11 +69,8 @@ FALLBACK_RESPONSES = {
 
         Refunds are processed within 5–7 business days to your original payment method.
         """
-
     ),
-
     "faq": (
-
         """
         Thank you for your question! 
         
@@ -97,11 +80,8 @@ FALLBACK_RESPONSES = {
 
         You can also reach our support team at support@techmartelectronics.com or call 1-800-TECHMART.
         """
-
     ),
-
     "general": (
-
         """
         Thank you for contacting TechMart Electronics support! 
         
@@ -111,14 +91,11 @@ FALLBACK_RESPONSES = {
 
         Please provide more details about your inquiry.
         """
-
     ),
-
 }
 
 
 class LLMClient:
-    
     "Wrapper around OpenAI-compatible APIs (Groq, OpenAI, Ollama). All methods are async."
 
     def __init__(self):
@@ -132,7 +109,6 @@ class LLMClient:
         self._provider = settings.LLM_PROVIDER
 
     def _get_client(self):
-        
         """
         Lazily initialise the SDK client, only when it's first needed.
         Returns None if no API key is configured or the SDK isn't installed —
@@ -161,14 +137,11 @@ class LLMClient:
 
                 from anthropic import AsyncAnthropic
 
-                self._client = AsyncAnthropic(api_key = config["api_key"])
+                self._client = AsyncAnthropic(api_key=config["api_key"])
 
                 logger.info(
-
                     f"LLM client initialized: provider = {self._provider},"
-
                     f"model = {config['model']}"
-
                 )
 
             except ImportError:
@@ -184,14 +157,13 @@ class LLMClient:
 
             from openai import AsyncOpenAI
 
-            self._client = AsyncOpenAI(api_key = config["api_key"], base_url = config["base_url"])
+            self._client = AsyncOpenAI(
+                api_key=config["api_key"], base_url=config["base_url"]
+            )
 
             logger.info(
-
                 f"LLM client initialized: provider = {self._provider},"
-
                 f"model = {config['model']}"
-
             )
 
         except ImportError:
@@ -204,19 +176,12 @@ class LLMClient:
         return self._client
 
     async def chat(
-
         self,
-
         messages: List[dict],
-
         system: Optional[str] = None,
-
         max_tokens: int = None,
-
         temperature: float = None,
-
     ) -> str:
-        
         """Send a chat completion request and return the assistant's reply text.
 
         Args:
@@ -262,25 +227,22 @@ class LLMClient:
                     # and its response shape is different from the OpenAI-style
                     # `choices[0].message.content` used by the other providers.
                     response = await client.messages.create(
-
-                        model = self._config["model"],
-
-                        system = system or "",
-
-                        messages = messages,
-
-                        max_tokens = max_tokens or settings.MAX_TOKENS,
-
-                        temperature = temperature if temperature is not None else settings.TEMPERATURE,
-
-                        timeout = 10.0
-
+                        model=self._config["model"],
+                        system=system or "",
+                        messages=messages,
+                        max_tokens=max_tokens or settings.MAX_TOKENS,
+                        temperature=(
+                            temperature
+                            if temperature is not None
+                            else settings.TEMPERATURE
+                        ),
+                        timeout=10.0,
                     )
 
                     return "".join(
-
-                        block.text for block in response.content if getattr(block, "type", None) == "text"
-
+                        block.text
+                        for block in response.content
+                        if getattr(block, "type", None) == "text"
                     ).strip()
 
                 full_messages = []
@@ -313,19 +275,12 @@ class LLMClient:
                     extra_params["reasoning_effort"] = "low"
 
                 response = await client.chat.completions.create(
-
-                    model = self._config["model"],
-
-                    messages = full_messages,
-
-                    max_tokens = max_tokens or settings.MAX_TOKENS,
-
-                    temperature = temperature or settings.TEMPERATURE,
-
-                    timeout = 10.0,
-
-                    extra_body = extra_params if extra_params else None
-
+                    model=self._config["model"],
+                    messages=full_messages,
+                    max_tokens=max_tokens or settings.MAX_TOKENS,
+                    temperature=temperature or settings.TEMPERATURE,
+                    timeout=10.0,
+                    extra_body=extra_params if extra_params else None,
                 )
 
                 return response.choices[0].message.content.strip()
@@ -334,7 +289,9 @@ class LLMClient:
 
                 last_error = e
 
-                logger.warning(f"LLM attempt {attempt + 1}/2 failed ({self._provider}): {e}")
+                logger.warning(
+                    f"LLM attempt {attempt + 1}/2 failed ({self._provider}): {e}"
+                )
 
                 # Don't sleep after the final attempt, just fall through to the fallback
                 if attempt < 1:
@@ -363,13 +320,13 @@ class LLMClient:
         return self._fallback_response(last_msg)
 
     async def complete(self, prompt: str, max_tokens: int = 300) -> str:
-        
         "Single-turn completion — a convenience wrapper around chat() for when you just have one prompt and no conversation history."
 
-        return await self.chat([{"role": "user", "content": prompt}], max_tokens = max_tokens)
+        return await self.chat(
+            [{"role": "user", "content": prompt}], max_tokens=max_tokens
+        )
 
     def _fallback_response(self, message: str) -> str:
-        
         """
         Keyword-based fallback response, used only when no LLM is configured.
         Looks for keywords in the user's message to guess which template fits best.
@@ -378,7 +335,10 @@ class LLMClient:
         msg = message.lower()
 
         # Billing-related keywords
-        if any(w in msg for w in ["bill", "invoice", "payment", "charge", "subscription", "renew"]):
+        if any(
+            w in msg
+            for w in ["bill", "invoice", "payment", "charge", "subscription", "renew"]
+        ):
 
             return FALLBACK_RESPONSES["billing"]
 
@@ -388,17 +348,51 @@ class LLMClient:
             return FALLBACK_RESPONSES["refund"]
 
         # Technical-issue keywords
-        if any(w in msg for w in ["broken", "not work", "error", "bug", "crash", "install", "password", "login"]):
+        if any(
+            w in msg
+            for w in [
+                "broken",
+                "not work",
+                "error",
+                "bug",
+                "crash",
+                "install",
+                "password",
+                "login",
+            ]
+        ):
 
             return FALLBACK_RESPONSES["technical"]
 
         # Product-related keywords
-        if any(w in msg for w in ["product", "price", "spec", "model", "laptop", "phone", "tablet", "buy"]):
+        if any(
+            w in msg
+            for w in [
+                "product",
+                "price",
+                "spec",
+                "model",
+                "laptop",
+                "phone",
+                "tablet",
+                "buy",
+            ]
+        ):
 
             return FALLBACK_RESPONSES["product"]
 
         # Complaint-related keywords
-        if any( w in msg for w in ["complaint", "angry", "terrible", "awful", "worst", "disappointed"]):
+        if any(
+            w in msg
+            for w in [
+                "complaint",
+                "angry",
+                "terrible",
+                "awful",
+                "worst",
+                "disappointed",
+            ]
+        ):
 
             return FALLBACK_RESPONSES["complaint"]
 
@@ -414,7 +408,6 @@ _llm_client: Optional[LLMClient] = None
 
 
 def get_llm_client() -> LLMClient:
-    
     "Return the shared LLMClient instance, creating it on first call."
 
     global _llm_client

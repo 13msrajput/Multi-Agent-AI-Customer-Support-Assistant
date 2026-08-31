@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 class RetrievalResult:
-    
     "One retrieved chunk, along with its relevance score."
 
     def __init__(self, text: str, source: str, score: float, chunk_id: int):
@@ -29,7 +28,9 @@ class RetrievalResult:
 
         self.source = source
 
-        self.score = score  # distance score — lower means more relevant for this index type
+        self.score = (
+            score  # distance score — lower means more relevant for this index type
+        )
 
         self.chunk_id = chunk_id
 
@@ -39,7 +40,6 @@ class RetrievalResult:
 
 
 class FAISSRetriever:
-    
     "Builds a FAISS flat-L2 index and enables semantic search over knowledge-base chunks. The index and chunk data are saved to disk so they can be reloaded on the next app startup without rebuilding."
 
     def __init__(self):
@@ -60,7 +60,6 @@ class FAISSRetriever:
     # Public API
     # ------------------------------------------------------------------
     def build_index(self, force_rebuild: bool = False) -> dict:
-        
         """
         Load the knowledge base and build (or reload) the FAISS index.
         If a saved index already exists on disk and force_rebuild is False,
@@ -74,20 +73,18 @@ class FAISSRetriever:
 
         # Try to reload from disk first, unless the caller explicitly wants a fresh rebuild
         if (
-
             not force_rebuild
-
             and self._index_path.exists()
-
             and self._chunks_path.exists()
-
         ):
 
             try:
 
                 self._load_from_disk()
 
-                logger.info(f"Reloaded FAISS index from disk ({len(self.chunks)} chunks).")
+                logger.info(
+                    f"Reloaded FAISS index from disk ({len(self.chunks)} chunks)."
+                )
 
                 self._ready = True
 
@@ -104,13 +101,7 @@ class FAISSRetriever:
         logger.info("Building FAISS index from knowledge base...")
 
         chunks, file_stats = load_knowledge_base(
-
-            settings.KNOWLEDGE_BASE_DIR,
-
-            settings.CHUNK_SIZE,
-
-            settings.CHUNK_OVERLAP
-
+            settings.KNOWLEDGE_BASE_DIR, settings.CHUNK_SIZE, settings.CHUNK_OVERLAP
         )
 
         if not chunks:
@@ -141,22 +132,20 @@ class FAISSRetriever:
 
         total_docs = len(set(c.source for c in chunks))
 
-        logger.info(f"FAISS index built: {len(chunks)} chunks across {total_docs} documents.")
+        logger.info(
+            f"FAISS index built: {len(chunks)} chunks across {total_docs} documents."
+        )
 
         return {
-
             "status": "built",
-
             "chunks": len(chunks),
-
             "documents": total_docs,
-
-            "file_stats": file_stats
-
+            "file_stats": file_stats,
         }
 
-    def retrieve(self, query: str, top_k: int = None, source_filter: Optional[List[str]] = None) -> List[RetrievalResult]:
-        
+    def retrieve(
+        self, query: str, top_k: int = None, source_filter: Optional[List[str]] = None
+    ) -> List[RetrievalResult]:
         """
         Semantic search: return the top-k most relevant chunks for a query.
         Optionally filter results down to one or more source documents
@@ -215,19 +204,12 @@ class FAISSRetriever:
                 continue
 
             results.append(
-
                 RetrievalResult(
-
-                    text = chunk_text,
-
-                    source = chunk_source,
-
-                    score = float(score),
-
-                    chunk_id = chunk_id
-
+                    text=chunk_text,
+                    source=chunk_source,
+                    score=float(score),
+                    chunk_id=chunk_id,
                 )
-
             )
 
             # Stop as soon as we have enough results after filtering
@@ -238,7 +220,6 @@ class FAISSRetriever:
         return results
 
     def format_context(self, results: List[RetrievalResult]) -> str:
-        
         "Format a list of retrieval results into a single context string, ready to be inserted into the LLM's system prompt."
 
         if not results:
@@ -258,14 +239,12 @@ class FAISSRetriever:
 
     @property
     def is_ready(self) -> bool:
-        
         "True once the index has been built or successfully reloaded."
 
         return self._ready
 
     @property
     def chunk_count(self) -> int:
-        
         "Total number of chunks currently indexed."
 
         return len(self.chunks)
@@ -274,13 +253,12 @@ class FAISSRetriever:
     # Private helpers — saving/loading the index to/from disk
     # ------------------------------------------------------------------
     def _save_to_disk(self):
-        
         "Persist the FAISS index and chunk metadata to disk."
 
         import faiss
 
         # Make sure the target directory exists before writing to it
-        self._index_path.parent.mkdir(parents = True, exist_ok = True)
+        self._index_path.parent.mkdir(parents=True, exist_ok=True)
 
         faiss.write_index(self.index, str(self._index_path))
 
@@ -291,7 +269,6 @@ class FAISSRetriever:
         logger.info(f"FAISS index saved to {self._index_path}")
 
     def _load_from_disk(self):
-        
         "Load a previously saved FAISS index and its chunk metadata."
 
         import faiss
@@ -312,7 +289,6 @@ _retriever: Optional[FAISSRetriever] = None
 
 
 def get_retriever() -> FAISSRetriever:
-    
     "Return the shared FAISSRetriever instance, creating it on first call."
 
     global _retriever
