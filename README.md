@@ -70,7 +70,7 @@ Every incoming message is classified before being routed to one of five domain a
 ```
 Multi-Agent-AI-Customer-Support-Assistant-using-RAG-and-LLMs/
 ├── backend/
-├── datasets
+├── datasets/
 ├── frontend/
 ├── knowledge_base/            
 ├── .gitignore
